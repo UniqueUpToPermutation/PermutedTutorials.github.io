@@ -1,3 +1,5 @@
 {
-  "index": "Introduction"
+  "index": "Introduction",
+  "physics": "Physics",
+  "stochastic": "Stochastic Processes"
 }

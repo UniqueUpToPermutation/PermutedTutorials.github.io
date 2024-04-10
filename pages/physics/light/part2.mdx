@@ -1,0 +1,74 @@
+## Scattering in Homogenous Media
+
+![scattering](/physics/light/scattering.jpeg)
+
+Of course, the above equations are very simplistic. They simply say that photons move in straight lines when in free space. Though this is useful, often-times photons are moving through a medium where they constantly collide with other particles and are scattered and absorbed throughout. The different ways materials scatter light are wholy reasonable for the different ways they look. For example, in the above figure, light enters the lion and then scatters around inside it until it exists and hits the viewer's eye. This gives the impression of soft lighting and partial translucency (see how the tail lets some light through with its red-orange highlights). So, if we are going to talk about light transport with an eye towards rendering things like the statue above, we are going to need to discuss how light changes direction.
+
+Unfortunately, this process is not deterministic. Or at least, it is not deterministic from the macroscopic viewpoint. Two light particles can hit the same surface and be reflected in completely different directions. We model this by saying that a light particle hitting a material (or fluid) at location $$x$$ in direction $$\omega_i$$ has a certain probability of being redirected in direction ωoωo​. It also has a certain probability of being absorbed. In the most general case, we want to think about rates rather than concrete probabilities. When a photon enters a scattering medium like the one pictured above, the photon will move a certain distance until it impacts something in the medium that redirects it. You should think of the contents of the medium as being random, and hence the distance travelled before a photon impacts an obstacle will be random as well. The average distance travelled before a photon hits an obstacle (i.e. scatters) is called the *mean free path*. The higher the mean free path, the more the photon can travel through the medium unobstructed and therefore the clearer the medium.
+
+Let us take this information and think about the parameters of a particle $$(X_t,\omega_t)$$ travels through a homogenous scattering medium. Occasionally $$\omega_t$$ will suddenly change randomly when the particle hits something. But how do we characterize this randomness?
+
+We can model this scattering process by using a continuous $$Q$$-process on the sphere $$\mathbb{S}^2$$. Recall that a $$Q$$-process $$W_t$$ on $$\mathbb{S}^2$$ is a continous time random process whose value changes abruptly at random times $$T_1,T_2,...,T_n,...$$. In particular, a $$Q$$-process on $$\mathbb{S}^2$$ is characterized by a generator operator $$\mathcal{L}$$ which satisfies
+
+$$
+\begin{equation}
+\mathcal{L}(\omega_i, \omega_o)= \sigma(\omega_i, \omega_o) - \mu_s (\omega_i) \delta(\omega_i, \omega_o) \,,
+\end{equation} 
+$$
+
+where
+
+$$
+\begin{equation}
+\mu_s(\omega) = \int_{\mathbb{S}^2} \sigma(\omega, \omega_o) \, d\Omega(\omega_o) \,.
+\end{equation}
+$$
+
+Here $d\Omega$ denotes the surface area measure on $\mathbb{S}^2$. We'll talk more about $$\mathcal{L}$$ later, but for now, let's focus on $$\sigma(\omega_i,\omega_o)$$. You should think of the function $$\sigma(\omega_i,\omega_o)$$ as the probability transition rates to go from a state $$x \rightarrow y$$. That is, $$W_t$$ satisfies:
+
+$$
+\begin{equation}
+\mathbb{P}(W_t + dt \in d\Omega(ω_o) \mid W_t = \omega_i) = \sigma(\omega_i, \omega_o) \, d\Omega \, dt + o(dt)\,.
+\end{equation}
+$$
+
+In other words, after a very small amount of time $$dt$$, $$W_t$$ has a probability of about $$\sigma(\omega_i,\omega_o) \, d\Omega dt$$ to jump to a small solid angle $$d\Omega$$ around $$\omega_o$$. This function $$\sigma(\omega_i,\omega_o)$$ is called the phase function and determines the rate at which a photon travelling in direction $$\omega_i$$ is redirected to direction $$\omega_o$$ after it hits an obstacle.
+
+How do we go from a Lagrangian formulation of a $$Q$$-process to an Eulerian formulation? Well let us ignore the position of our particles (the medium is homogenous, so position doesn't really matter when it comes to rotation) and simply examine the probability distribution of the directions $$\omega^{(i)}$$ of our particles. We write the distribution of directions of our particles as $$\rho_t(\omega)$$. You should think of this function as a representing the fact that there are $$\rho_t(\omega)$$ photons anywhere in the medium that are in direction $$\omega$$.
+
+Let us compute how the density $$\rho_t(\omega)$$ changes over time at a given orientation $$\omega$$. From the definition of the $$Q$$-process above, we have that
+
+$$
+\begin{equation}
+\begin{split}
+\rho_{t+dt}(\omega) &= \rho_t(\omega) + \left[\int_{\mathbb{S}^2} \rho_t(\omega_i)\sigma(\omega_i, \omega)\, d\Omega(\omega_i)\right]dt \\
+&\quad - \left[\int_{\mathbb{S}^2} \rho_t(\omega) \sigma(\omega, \omega_o) \, d\Omega(ω_o)\right] \, dt + o(dt) \,.
+\end{split}
+\end{equation}
+$$
+
+This expression is saying that the number of particles in direction $$\omega$$ at time $$t+dt$$ is the number of particles in direction $$\omega$$ at time $$t$$, plus the number of particles that are redirected from any other direction $$\omega_i$$ into direction $$\omega$$ over the time $$dt$$, minus the number of particles that are redirected from direction $$\omega$$ to any other direction $$\omega_o$$ over the time $$dt$$. Note that we can take $$\rho_t(\omega)$$ out of the integral above to get
+
+$$
+\begin{equation}
+\rho_{t+dt}(\omega)=\rho_t(\omega)+\left[\int_{\mathbb{S}^2}\rho_t(\omega_i)\sigma(\omega_i,\omega)\, d\Omega(\omega_i)\right] \, dt - \mu_s(\omega)\rho_t(\omega)\, dt+o(dt) \,.
+\end{equation}
+$$
+
+Rearranging the above and taking $$dt\rightarrow0$$ gives us
+
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t}(\omega)= \int_{\mathbb{S}^2}\rho_t(\omega_i) \, \sigma(\omega_i,\omega)\, d \Omega(\omega_i) - \mu_s(\omega) \rho_t(\omega) \,.
+\end{equation}
+$$
+
+This often appreviated by writing
+
+$$
+\begin{equation}
+\frac{\partial\rho_t}{\partial t} = \mathcal{L}^*\rho_t \,,
+\end{equation}
+$$
+
+where $$\mathcal{L}^*$$ is the adjoint of $$\mathcal{L}$$ (i.e., $$\mathcal{L}^*(\omega_i, \omega_o) = \mathcal{L}(\omega_o, \omega_i)$$). This equation is called the forward equation for a $$Q$$-process. Here, one says that the operator $$\mathcal{L}^*$$ generates the time evolution of $$\rho_t$$​. This is very similar to deriving the forward equations for a random walk by using Ito's lemma.

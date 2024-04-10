@@ -1,0 +1,106 @@
+
+## The Photon
+
+Let's first start by thinking about the simplest object involved in light transfer: the photon. If you're interested in what a photon actually is - an excitation of a quantum field - you'll have to learn quantum field theory, but for our purposes, imagine that a photon is just a discrete particle of light travelling through space. A photon has a few elementary properties, including:
+
+* **Position**: At any given time $$t$$, every photon has a position $$X_t \in \mathbb{R}^3$$.
+
+* **Direction**: At any given time $$t$$, every photon has a direction $$\omega_t \in \mathbb{S}^2$$ (here $$\mathbb{S}^2 \subset \mathbb{R}^3$$ denotes the 2-sphere of points unit $$\ell_2$$ distance away from the origin). While direction may vary, the speed of a photon in free space is always constant as $$c \approx 3 \cdot 10^8 \, m/s$$.
+
+* **Wavelength**: A photon has a specific wavelength $$\lambda>0$$. The electromagnetic field carrying a photon usually has a periodicity and $$\lambda$$ is the length of a single period.
+
+* **Frequency**: A photon has a frequency $$\nu$$. The frequency measures the time periodicity at which the underlying electromagnetic field - locally, the oscillations of electromagnetic field returns to its original configuration every $$1/\nu$$ seconds. The frequency and wavelength are related by the speed of the photon,
+
+$$
+\begin{equation}
+\lambda \nu = c \,.
+\end{equation}
+$$
+
+* **Energy**: A photon carries with it a certain amount of energy. This energy comes from the light source that generate the photon via spontaneous or stimulated emission. The Planck-Einstein relation postulates that the energy a photon carries is directly porpotional to its frequency. The constant of porportionality is called the Planck constant $$h$$:
+
+$$
+\begin{equation}
+E = h \nu \,.
+\end{equation}
+$$
+
+* **Momentum**: As postulated by de Broglie, the momentum $$p$$ of a particle is inversely porpotional to its wavelength, i.e.,
+
+$$
+\begin{equation}
+p = \frac{h}{\nu} = \frac{E}{c} \,.
+\end{equation}
+$$
+
+For our purposes the important parts of a photon are really only its position, direction, and wavelength. In the coming sections, we will therefore focus on $$(X_t,\omega_t,\lambda)$$.
+
+## Photon Motion in Free Space
+
+Photons don't just sit there, they tend to move around. In fact, they move around at the speed of light (which is pretty fast). Therefore, if we're describing the motion of a single photon $$(X_t,\omega_t,\lambda)$$ in free space, it should satisfy the basic equation of motion:
+
+$$ 
+\begin{equation}
+\frac{d X_t}{dt} = c \, \omega_t \,.
+\end{equation} 
+$$
+
+In linear optics, photons tend not to interact with each other, so if we have a collection of photons $$(X_t^{(i)},\omega_t^{(i)},\lambda^{(i)})$$, the equations are motions are not coupled in any way:
+
+$$
+\begin{equation}
+\frac{dX_t^{(i)}}{dt} = c \, \omega_t^{(i)} \,. 
+\end{equation}
+$$
+
+Note that to complete the equations, we need to specify the directions $$\omega_t^{(i)}$$. In free space, once a photon has been released, it will retain its direction and speed as long as it doesn't hit anything. Therefore, the free space equations for photon motion are exceedingly simple, as the directions $$\omega_t^{(i)}$$ are all constants $$\omega^{(i)}$$:
+
+$$
+\begin{equation}
+\frac{dX_t^{(i)}}{dt} = c \, \omega^{(i)} \,. 
+\end{equation}
+$$
+
+Starting from initial positions $$X_0^{(i)}$$, these ODEs are very easy to solve:
+
+$$
+\begin{equation}
+X_t^{(i)} = X_0^{(i)} + c ω^{(i)} t.
+\end{equation}
+$$
+
+Note that this analysis is in terms of individual non-interacting particles $$X_t^{(i)}$$. This is usually refered to as a Lagrangian formulation. Most of the time however, the motion of individual particles is not the end goal. Instead, we are often interested the distribution of particles $$\rho_t$$. This distribution $$\rho_t(x, \omega)$$ is specified as a function of both a position in space $$x \in \mathbb{R}^3$$ and a direction $$\omega \in \mathbb{S}^2$$. Note that the evolution of $$\rho_t(x,ω)$$ is not tied to the viewpoint of the individual particles, but rather to the viewpoint of individual locations in free space. This distribution-based view is referred to as an Eulerian formulation.
+
+How does one go from the Lagrangian formulation to an Eulerian formulation? One way is via a technique known as characteristic analysis. Note that the equations of motion are completely reversible - if I specify the position and orientation of a photon at time $$t$$, you can calculate backwards the position and orientation at time $$0$$. Therefore, all particles follow non-intersecting characteristic paths $$(X_t, \omega_t)$$ through the phase space $$\mathbb{R}^3 \times \mathbb{S}^2$$. This means that the distribution of particles along these paths should remain constant over time. This gives the equation:
+
+$$
+\begin{equation}
+\frac{d\rho_t(X_t, \omega_t)}{dt} = 0\,.
+\end{equation}
+$$
+
+Using the chain rule,
+
+$$
+\begin{equation}
+\frac{d\rho_t(X_t, \omega_t)}{dt} = \nabla \rho_t(X_t, \omega_t) \cdot \frac{dX_t}{dt} + \frac{\partial \rho_t}{\partial \omega_t} (X_t, \omega_t) \cdot \frac{d\omega_t}{dt} + \frac{\partial \rho_t(X_t, \omega_t)}{\partial t} = 0 \,.
+\end{equation}
+$$
+
+In the particular case of free space, $$\omega_t$$ is constant, therefore, using the equation (6) for $$dX_t/dt$$ from above, we get
+
+$$
+\begin{equation}
+c \omega \cdot \nabla \rho_t(x, \omega) + \frac{\partial \rho_t(x, \omega)}{\partial t} = 0\,.
+\end{equation}
+$$
+
+Rearranged this gives
+
+$$
+\begin{equation}
+\frac{\partial \rho_t(x, \omega)}{\partial t}  = - c \omega \cdot \nabla \rho_t(x, \omega) \,.
+\end{equation}
+$$
+
+If we fix $$\omega$$, you might recognize this as the transport equation from partial differential equations.
