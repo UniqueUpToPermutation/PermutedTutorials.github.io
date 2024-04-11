@@ -1,5 +1,7 @@
 {
   "index": "Introduction",
-  "physics": "Physics",
-  "stochastic": "Stochastic Processes"
+  "light1" : "Light Transport",
+  "sdeandpde": {
+    "title": "Stochastic Processes and Elliptic Equations"
+  }
 }
