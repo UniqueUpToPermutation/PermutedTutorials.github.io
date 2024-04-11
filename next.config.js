@@ -4,6 +4,4 @@ const withNextra = require('nextra')({
   latex: true
 })
 
-module.exports = {
-  ...withNextra(),
-};
+module.exports = withNextra()
