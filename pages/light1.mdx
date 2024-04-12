@@ -46,7 +46,7 @@ $$
 
 For our purposes the important parts of a photon are really only its position, direction, and wavelength. In the coming sections, we will therefore focus on $$(X_t,\omega_t,\lambda)$$.
 
-## Photon Motion in Free Space
+### Photon Motion in Free Space
 
 Photons don't just sit there, they tend to move around. In fact, they move around at the speed of light (which is pretty fast). Therefore, if we're describing the motion of a single photon $$(X_t,\omega_t,\lambda)$$ in free space, it should satisfy the basic equation of motion:
 
@@ -116,7 +116,7 @@ $$
 
 If we fix $$\omega$$, you might recognize this as the transport equation from partial differential equations.
 
-## Scattering in Homogenous Media
+### Scattering in Homogenous Media
 
 ![scattering](/physics/light/scattering.jpeg)
 
@@ -191,7 +191,7 @@ $$
 
 where $$\mathcal{L}^*$$ is the adjoint of $$\mathcal{L}$$ (i.e., $$\mathcal{L}^*(\omega_i, \omega_o) = \mathcal{L}(\omega_o, \omega_i)$$). This equation is called the forward equation for a $$Q$$-process. Here, one says that the operator $$\mathcal{L}^*$$ generates the time evolution of $$\rho_t$$. This is very similar to deriving the forward equations for a random walk by using Ito's lemma.
 
-## The Statistics of Scattering Events
+### The Statistics of Scattering Events
 
 The next question one might ask is for the actual statistics of the scattering times $$T_1, T_2, ..., T_n$$. These are relatively straightforward. Note that the $$Q$$-process is Markovian and hence the intervals $$\Delta T_i =T_i-T_{i-1}$$ are independent and identically distributed. This makes sense, because once the particle has scattered, it doesn't care about anything other than its current position and orientation. In other words, the path a particle has taken to get to a certain point is irrelevant, it is only the current state that matters. To derive statistics for the $$\Delta T_i$$, we need to consider the distribution $$\rho_t^{(0)}(\omega)$$. $$\rho_t^{(0)}(\omega)$$ is defined as the distribution of particles that have not yet scattered. At any given time the probability that a particle scatters in the next $$dt$$ seconds is given by:
 
@@ -331,7 +331,7 @@ $$
 
 where $$W_t$$ is a $$Q$$-process on $$\mathbb{S}^2$$ with generator $$\mathcal{L}$$.
 
-## Isotropic Scattering
+### Isotropic Scattering
 
 The simplest example of a scattering medium is one that is fully isotropic, i.e., regardless of the incomming and outgoing directions $$\omega_i$$ and $$\omega_o$$, the rate of scattering is the same. That is,
 $$
@@ -436,7 +436,7 @@ $$
 
 We have therefore derived the full radiative transport equation.
 
-## Statistics of Scattering Events
+### Statistics of Scattering Events
 
 Let us assume for now that the scattering medium is non-absorbing, i.e., that $$\mu_a=0$$ everywhere. Just like in the homogenous case, every particle will have a series of scattering times $$T_1,T_2,...,T_n,...$$. The difference now is that these scattering times depend explicitly on the path the photon is travelling along.
 
@@ -473,7 +473,7 @@ $$
 
 Therefore, if one wishes to simulate a photon scattering in a heterogenous medium, one might sample scattering times from the above distribution.
 
-## Statistics of Absorption Events
+### Statistics of Absorption Events
 
 The above section only covers scattering events. However, a photon may experience either a scattering or an absorption event while it is traversing through a medium. Recall, that photons travelling in direction $$\omega$$ at a position $$x$$ are absorbed at a rate $$\mu_a(\omega)$$. Combining this with scattering events, at every time step of $$dt$$, a photon has a probability $$\mu_a(\omega)\, dt$$ of being absorbed and a $$\mu_s(\omega)\, dt$$ probability of being scattered. Let $$A$$ be the event where the photon is absorbed. Therefore, one can follow the derivation of the previous section to obtain:
 $$
@@ -509,7 +509,7 @@ $$
 \end{equation}
 $$
 
-## Emissive Media
+### Emissive Media
 
 ![light bulb](/physics/light/lightbulb.jpg)
 
@@ -566,7 +566,7 @@ This can be written out as:
 $$
 \begin{equation}
 \begin{split}
-jˉ(x,ω) &= c \omega \cdot \nabla_x \rho(x,\omega) + \int_{\mathbb{S}^2} \rho(x,\omega_i) \sigma(x,\omega_i,\omega)\, d\Omega(\omega_i) \\ 
+\bar{j}(x,ω) &= c \omega \cdot \nabla_x \rho(x,\omega) + \int_{\mathbb{S}^2} \rho(x,\omega_i) \sigma(x,\omega_i,\omega)\, d\Omega(\omega_i) \\ 
 & \quad + (\mu_s(x,\omega)+\mu_a(x,\omega)) \rho(x,\omega)\,.
 \end{split}
 \end{equation}
@@ -579,7 +579,7 @@ $$
 \end{equation}
 $$
 
-## Steady-State Transfer with Boundary Conditions
+### Steady-State Transfer with Boundary Conditions
 
 Often times we're not interested in scattering on the whole of $$\mathbb{R}^3$$, but rather on some restricted domain $$D$$. We can easily imagine the following question: given the geometry and makeup of someone's face, suppose we put a flashlight under it and want to know what the face will look like when after the light propagates through it.
 
