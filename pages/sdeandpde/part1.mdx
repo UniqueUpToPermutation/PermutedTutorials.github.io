@@ -1,0 +1,558 @@
+# Finite Difference Equations from Discrete Stochastic Processes
+
+![Banner](/sdes/sde1.jpg)
+
+This quick tutorial on the deep connection between elliptic/parabolic systems and stochastic processes. The connection gives a lot of useful intuition about how to interpret elliptic/parabolic PDEs as well as Laplacian systems on graphs. Part I covers discrete time stochastic processes on graphs.
+
+> This tutorial is meant for students at the graduate or advanced undergraduate level.
+
+## Hitting Time Problems on the Path Graph
+
+Let us consider the simplest case of an elliptic system - namely an elliptic system on the path graph $$P_N$$ with NN vertices, labelled $$0,...,N-10,...,N-1$$. Let us define a random process $$X_t \in V(P_N)$$ for $$t \in \mathbb{Z}_{\geq 0}$$ as a random walk on the graph $$P_N$$ (i.e., the process $$X_t$$ moves left or right with equal probability, unless it is at the boundary, where it bounces back).
+
+A natural question to ask about the process $$X_t$$ is, given that $$X_t$$ starts at a certain location (say, $$X_0=n$$), how long will it take the process $$X_t$$ to hit either the left or right boundary of the graph? For some visual flair, maybe imagine that $$X_t$$ is a drunk guy who is trying to get home and is stumbling back on forth on a circular driveway (the endpoints of $$P_N$$ are his home) -- and we want to ask how long on average it will take the drunk man to get home?
+
+This question turns out to essentially be a linear system. To see why, let's define the stopping time $$T$$ to be the first time that $$X_t$$ arrives either at $$0$$ or $$N-1$$. The above problem is asking us to compute the expected value of $$T$$, i.e., compute the function
+$$
+\begin{equation}
+u(x)=\mathbb{E}[T \mid X_0=x] \,.
+\end{equation}
+$$
+
+A linear system for $$u(x)$$ can be expressed using a technique known as **first transition analysis**. First transition analysis expands the above expression by considering all of the possible transitions that the process $$X_t$$ can make starting at $$X_0=x$$. We know that $$X_t$$ can go left or right with probability $$1/2$$, therefore by the properties of conditional expectation, we have that
+$$
+\begin{equation}
+u(x)=\frac{1}{2}\mathbb{E}[T\mid X_1 = x-1 ] +\frac{1}{2} \mathbb{E} [T \mid X_1=x+1] \,.
+\end{equation}
+$$
+
+However, note that the process $$X_t$$ is **Markovian**, that is, it has no memory of the past. What the process $$X_t$$ does at time $$t+1$$ doesn't dependent on anything except for the state of $$X_t$$ at time $$t$$. Therefore, it follows that
+$$
+\begin{equation}
+\mathbb{E}[T \mid X_1 = y] = \mathbb{E}[T \mid X_0 = y ]+1 \,.
+\end{equation}
+$$
+
+In English, this mathematical statement is expressing the fact that expected time until $$X_t$$ hits the boundary if it is at state $$y$$ at time $$1$$ is the same as the expected time for $$X_t$$ hits the boundary starting had it started from $$y$$ originally, plus one (because we have effectively rewound the clock by one unit of time and need to account for this). Thus, we can plug this into the first transition analysis expression for $$u(x)$$ to get
+$$
+\begin{equation}
+u(x)=\frac{1}{2}\mathbb{E}[T \mid X_0=x-1] + \frac{1}{2}\mathbb{E}[T \mid X_0=x+1] + 1=\frac{1}{2} u(x-1) + \frac{1}{2}u(x+1) + 1 \,.
+\end{equation}
+$$
+
+Rearranging,
+$$
+\begin{equation}
+-\frac{1}{2}u(x-1)+u(x)-\frac{1}{2}u(x+1)=1\,. 
+\end{equation}
+$$
+
+Note however, that this is only valid for the interior of the path graph $$P_N$$ and therefore, we need to apply boundary conditions at $$x=0$$ and $$x=N-1$$. This is fairly easy, because if the process starts at either of the ends of the path, then the expected amount of time until it reaches the ends of the graph should be zero,
+$$
+\begin{equation}
+\begin{split}
+u(0)&=0 \,, \\
+u(N-1)&=0 \,.
+\end{split}
+\end{equation}
+$$
+If we write out what the matrix for this system, we see it has the form
+$$
+\begin{equation}
+\frac{1}{2} \left[ \begin{array}{ccccc} 
+2 & -1 & & & \\
+-1 & 2 & -1 & & \\
+& -1 & 2 & -1 & \\
+& & & \ddots & \\
+& & -1 & 2 & -1 \\
+& & & -1 & 2
+\end{array}\right]
+\left[\begin{array}{c} u(1) \\ u(2) \\ u(3) \\ \vdots \\ u(N - 3) \\ u(N - 2) \end{array}\right] =
+\left[\begin{array}{c} 1 \\ 1 \\ 1 \\ \vdots \\ 1 \\ 1 \end{array}\right]
+\end{equation}
+$$
+
+You might recognize the matrix above as the second order finite difference stencil matrix for the Poisson equation in 1D. As we will see later, this is not entirely a coincidence, as the Poisson equation has a similar probabilistic interpretation.
+
+## Hitting Time Problems on General Graphs
+
+Now that we've seen a basic elliptic system arrise out a hitting time problem for a stochastic process on the path graph $$P_N$$, it is time to move to the more general types of graphs. Suppose we have a graph $$G=(V,E)$$ and we have a stochastic process $$X_t \in V$$ defined on the vertex set $$V$$. If we have a special set of death vertices $$D \subset V$$, we can once again ask the analogue of the above hitting time question: how long does $$X_t$$ take to hit a vertex in $$D$$, given that it starts at $$x \in V$$? Once, again, we want to compute
+$$
+\begin{equation}
+u(x)=\mathbb{E}[T \mid X_0=x] \,,
+\end{equation}
+$$
+
+where $$T$$ is the hitting time of $$D$$, i.e.,
+$$
+\begin{equation}
+T = \inf_t \{ t \mid X_t \in D \} \,.
+\end{equation}
+$$
+
+If we only consider $$X_t$$ which are Markovian, the dynamics of $$X_t$$ can be characterized completely by its probability transition kernel $$P$$ (also known as the transition matrix), defined by
+$$
+\begin{equation}
+\mathbb{P}(x,y)=\mathbb{P}(X_t=y \mid X_{t-1}=x) \,,
+\end{equation}
+$$
+
+i.e., the probability that we make the transition $$x \rightarrow y$$ if we are at vertex $$x$$. If we do first transition analysis on the process $$X_t$$, we can write down an expression for $$u(x)$$ like in the previous section,
+$$
+\begin{equation}
+u(x) = \sum_v P(x,v) \, u(v) + 1\,.
+\end{equation}
+$$
+
+Once again, rearranging this expression yields
+$$
+\begin{equation}
+u(x)-\sum_v P(x,v) \, u(v) = 1 \,.
+\end{equation}
+$$
+
+This equation is often written as
+$$
+\begin{equation}
+\mathcal{L} u=-1\,.
+\end{equation}
+$$
+
+where
+$$
+\begin{equation}
+\mathcal{L}=P-I \,,
+\end{equation}
+$$
+
+is known as the **generator** of the process $$X_t$$. You may recognize this matrix from spectral graph theory, where it is the negative of the **graph Laplacian**.
+
+To get a well-posed system of equations for $$u$$, we must also enforce boundary conditions, namely,
+$$
+\begin{equation}
+u(x)=0 , \qquad \text{for } x \in D \,.
+\end{equation}
+$$
+
+Together this gives us the complete elliptic system of equations for the hitting time of $$D$$ from anywhere in the graph, which we can write down as
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L} u=-1 \,, &\qquad \text{on } V \setminus D \,, \\
+u=0\,, &\qquad \text{on } D \,.
+\end{split}
+\end{equation}
+$$
+
+A very nice thing about these types of problems is that they can be solved in nearly linear time by Laplacian system solvers.
+
+However, there are many other types of interesting problems concerning stochastic processes which also reduce to elliptic systems. We will examine an example in the next section.
+
+## Expected Terminal Reward Problems on Graphs
+
+Suppose instead of being interested in the hitting time of a set $$D \subset V$$, we are instead interested in some kind of terminal reward on $$D$$. Denote this reward as a function $$g:D\rightarrow R$$. Maybe think of this like $$X_t$$ is a person wandering through a maze until he gets to the an exit $$v \in D$$, whereupon he recieves the reward $$g(v)$$. A question we can ask about $$X_t$$ is the expected terminal reward that the process $$X_t$$ recieves given $$X_t$$ starts at a vertex $$x$$, i.e.
+$$
+\begin{equation}
+u(x)=\mathbb{E}[g(X_T) \mid X_0=x] \,.
+\end{equation}
+$$
+
+Turns out we can use first transition analysis here too! Let's try it,
+$$
+\begin{equation}
+u(x)=\sum_v \mathbb{P}(X_1=v \mid X_0 = x) \mathbb{E}[g(X_T) \mid X_1 = v] \,.
+\end{equation}
+$$
+
+Now, note that by the Markov property,
+$$
+\begin{equation}
+\mathbb{E}[g(X_T) \mid X_1=v ]= \mathbb{E}[g(X_T) \mid X_0= v] \,,
+\end{equation}
+$$
+
+because the expected terminal reward is the same if $$X_t$$ starts at $$v$$ or if we know that $$X_t$$ transitioned to $$v$$ on the first time step. Note we don't have to add one in this case like we did for the hitting time problem --- this is because the value of $$T$$ does not impact the terminal reward. Therefore,
+$$
+\begin{equation}
+u(x)=\sum_v P(x,v) \, u(v) \,,
+\end{equation}
+$$
+
+which can be written as
+$$
+\begin{equation}
+\mathcal{L} u=0\,, \qquad \text{on } V\setminus D \,.
+\end{equation}
+$$
+
+However, we now need different boundary conditions. But, note that if $$X_t$$ starts on a vertex $$x\in D$$, then we immediately terminate and receive a reward of $$g(x)$$. Therefore, we have that
+$$
+\begin{equation}
+u=g\,, \qquad \text{on } D \,,
+\end{equation}
+$$
+
+this is sometimes called a Laplace equation with Dirichlet boundary conditions.
+
+### First Arrival Problems
+
+An interesting subset of the above collection of problems are first arrival problems. Suppose the termination set $$D \subset V$$ is split into two disjoint subsets $$A \cup B =D$$ . What is the probability that, when we terminate, it is because we are in $$A$$? Another way of phrasing this problem, is what is the probability that $$X_t$$ hits $$A$$ before it hits $$B$$?. It turns out that solving this problem is very easy with the above machinery. Simply define $$g$$ to be $$1$$ on $$A$$ and $$0$$ on $$B$$. Then, the expected reward is precisely the probability that we hit $$A$$ before $$B$$.
+
+The system of equations written out in full is
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L}u=0\,,&\qquad \text{on } V\setminus D \,, \\
+u=1\,,&\qquad \text{on }A \,, \\
+u=0\,,&\qquad \text{on }B \,.
+\end{split}
+\end{equation}
+$$
+
+### General Discounted Reward Problems
+
+The most general form of an elliptic system arrising from a stochastic process on a graph can be phrased in terms of discounted reward. Suppose, like above that $$X_t$$ wanders through the graph playing the above game until it arrives at a vertex in $$D$$ (this time though, we allow $$D=\emptyset$$, i.e., the game continues forever). When $$X_t$$ arrives at a terminal vertex in $$x \in D$$, the game stops and $$X_t$$ receives a reward $$g(x)$$. However, along the way, the process $$X_t$$ also receives an ongoing stream of rewards depending on the vertices it visits. That is, if $$X_t=x$$, then the process receives $$f(x)$$ reward at time tt where $$f$$ is defined on the non-terminal vertices, i.e. $$f: V \setminus D \rightarrow \mathbb{R}$$. This problem revolves around the expected total reward received over the course of the game,
+$$
+\begin{equation}
+u(x)=\mathbb{E}[\sum_{t = 0}^{T-1}f(X_t)+g(X_T) \mid X_0=x] \,.
+\end{equation}
+$$
+
+In general settings, one may also consider *discounted reward*, where the reward received at time tt is discounted by a factor of $$0 \leq \gamma \leq 1$$. This means that reward collected at the beginning of the game is more important than reward received later on (this is a common situation in economics or finance, where having money in the bank can net you interest, so one dollar today is worth more than one dollar a year from now). Then, the total discounted reward reads
+$$
+\begin{equation}
+u(x)=\mathbb{E}[\sum_{t = 0}^{T-1} \gamma^t f(X_t) + \gamma^T g(X_T) \mid X_0=x]\,.
+\end{equation}
+$$
+
+How do we solve for $$u(x)$$? You guessed it! First transition analysis! Here we go:
+$$
+\begin{align}
+&\mathbb{E}\left[\sum_{t = 0}^{T-1}\gamma^t f(X_t)+\gamma^T g(X_T) \mid X_0 = x\right] \\
+&\quad= \sum_v P(v,x) \left(\mathbb{E}\left[\sum_{t=1}^{T-1} \gamma^t f(X_t)+\gamma^T g(X_T) \mid X1 =v\right] +f(x)\right) \\
+&\quad=f(x)+\gamma \sum_v P(x,v) \mathbb{E}\left[\sum_{t=0}^{T-2} \gamma^t f(X_{t+1})+\gamma^{T-1}g(X_T) \mid X_1=v\right] \\
+&\quad=f(x)+\gamma \sum_v P(x,v) \mathbb{E}\left[\sum_{t = 0}^{T-1} \gamma^t f(X_t)+\gamma^T g(X_T) \mid X_0=v\right] \\
+&\quad=f(x)+\gamma \sum_v P(x,v) u(v)\,,
+\end{align}
+$$
+
+where from eq. (26) to eq. (27) we used the fact that the process receives $$f(x)$$ reward and then transitions to a new state $$v$$ with probability $$P(x,v)$$, and from eq. (27) to eq. (28) we used the Markov property of $$X_t$$. Therefore, on $$V\setminus D$$, we have
+$$
+\begin{equation}
+u(x)- \gamma\sum_v P(x,v) \, u(v) =f(x) \,,
+\end{equation}
+$$
+and on $$D$$, we have
+$$
+\begin{equation}
+u(x)=g(x)\,.
+\end{equation}
+$$
+
+In matrix form, this can be written as
+$$
+\begin{equation}
+\begin{split}
+(I-\gamma P)u=f\,,&\qquad \text{on }V\setminus D \,, \\
+u=g\,,&\qquad \text{on } D \,.
+\end{split}
+\end{equation}
+$$
+
+Therefore, if you ever see a linear system of the above form on a graph (i.e., a Laplacian system with discounting), where $$P$$ is a transition matrix, you can always interpret the result with the expression
+$$
+\begin{equation}
+u(x)=\mathbb{E}\left[\sum_{t = 0}^{T-1}\gamma^t f(X_t) + \gamma^T g(X_T)\mid X_0=x\right]\,,
+\end{equation}
+$$
+
+where the inhomogeneous term $$f(x)$$ is the reward received for leaving vertex $$x$$, the Dirichlet boundary condition $$g(x)$$ is the terminal reward received when the game ends as $$X_t$$ arrives at $$x$$, and $$\gamma$$ is the discount factor of this game. Note that if the termination set $$D$$ is empty, then the game runs forever (for the total reward to be finite the discount factor must be $$0\leq\gamma\leq1$$ in this case), and the expression for reward is given by
+$$
+\begin{equation}
+u(x)=\mathbb{E}\left[\sum_{t = 0}^\infty \gamma^t f(X_t) \mid X_0 = x \right]\,.
+\end{equation}
+$$
+
+An immediate consequence of these probabilistic expressions is the maximal principle,
+
+### Discrete Maximum Principle for Subharmonic Functions
+
+Functions $$v$$ defined on the vertices of a graph $$G$$ with a stochastic process $$X_t$$ with generator $$\mathcal{L}$$ are called **subharmonic** on $$A \subset V$$ if
+$$
+\begin{equation}
+\mathcal{L} v\geq 0\,,\qquad \text{on }A\,.
+\end{equation}
+$$
+
+(It is **harmonic** if $$\mathcal{L}v=0$$). Note that any $$v$$ is trivially the solution to the system
+$$
+\begin{equation}
+\begin{split}
+(I-P)v=-\mathcal{L}v\,,&\qquad \text{on }A\,, \\
+v=v\,,&\qquad \text{on }\partial A \,,
+\end{split}
+\end{equation}
+$$
+
+where we define $$\partial A$$ as the set of vertices that not in $$A$$, but are adjacent to a vertex in $$A$$. Therefore, the probabilistic interpretation we've developed tells us that, for $$x \in A$$,
+$$
+\begin{equation}
+v(x)=\mathbb{E}\left[\sum_{t = 0}^{T-1}-\mathcal{L} v(X_t)+v(X_T)\mid X_0=x\right]\leq\mathbb{E}\left[v(X_T)\right]\leq \max_{y \partial A} v(y),
+\end{equation}
+$$
+
+where $$T$$ is the hitting time of $$\partial A$$. Note that we have used the fact that $$\mathcal{L}v\leq0$$ to drop the $$\sum_{t=0}^{T-1}(\mathcal{L}v)(X_t)$$ term and then used the fact that $$X_T \in \partial A$$.
+
+Therefore, if $$v$$ is a subharmonic function on a domain $$A$$ in the graph $$G$$, its maximum must always occur on the boundary of $$A$$. This is fundamental result in analysis (for subharmonic functions on $$\mathbb{R}^n$$), but this probabilistic interpretation of the Laplacian gives us a super easy way of seeing why the result is true.
+
+A byproduct of this analysis is that if the function $$v(x)$$ is actually harmonic, instead of just subharmonic, we have that, for $$x \in A$$,
+$$
+\begin{equation}
+v(x)=\mathbb{E}\left[v(X_T) \mid X_0 =x \right] = \sum_{y\in\partial A}\mathbb{P}(X_T=y) v(y) \,.
+\end{equation}
+$$
+
+Thus, $$v(x)$$ is essentially just a weighted average over the boundary $$\partial A$$, where the contribution of $$v(y)$$ depends on the probability of the walk $$X_t$$ ending up at $$y$$ when it terminates.
+
+This idea of expressing a function in terms of an expectation of a function of stochastic process $$X_t$$ gives us a glimpse of a fundamental technique in stochastic differential equations called Ito's formula (to be talked about later).
+
+## Stationary Distribution Problems
+
+Another important property is the stationary distribution of stochastic processes $$X_t$$ on graphs. Stationary distributions are extremely important in many data science applications. For example, one way to rank the relative importance of web domains on the internet is to think about a random walk $$X_t$$ through the internet and ask the question: after a very long time what is the average amount of time that $$X_t$$ has spent at a specific webpage? It turns out this question has a unique answer (for most graphs) that doesn't depend on the starting point of $$X_t$$. Indeed, the average fraction of the time $$X_t$$ spends at $$x$$ (over an infinitely long time) is given by the entries of a special distribution $$\pi$$ called the stationary distribution. I won't go into much detail here, but basically if $$\pi_t$$ denotes the probability distribution of $$X_t$$ at time $$t$$ on the graph, then $$\pi$$ is the limit of the $$\pi_t$$ as $$t \rightarrow \infty$$.
+
+The key property which defines the stationary distribution is that if $$X_0$$ has distribution $$\pi$$, i.e., $$X_0 \sim \pi$$, then $$X_1,X_2,X_3,...$$ etc. also have distribution $$\pi$$. Hence, why $$\pi$$ is called stationary. To write down an equation for the stationary distribution, we should first write down how the distributions $$\pi_t$$ evolve with time. This turns out not to be to difficult, as to compute $$\pi_t(x)$$ we simply need to some over all of the possible ways $$X_{t - 1}$$ can reach $$x$$ and weigh those quantities by the probability of making the transition $$X_{t - 1} \rightarrow x$$,
+$$
+\begin{equation}
+\pi_t(x)=\sum_v \mathbb{P}(X_t=x \mid X_{t-1}=v) \mathbb{P}(X_t-1=v) = \sum_v P(v,x) \pi_{t-1}(v) \,.
+\end{equation}
+$$
+
+If we represent $\pi_t$ as a row vector, this is written in matrix form by
+$$
+\begin{equation}
+\pi_t= \pi_{t - 1} P.
+\end{equation}
+$$
+
+Note since multiplication by $P$ occurs on the right, effectively the *transpose* of the probability transition kernel has been used.We remark that the stationary distribution should therefore satisfy
+$$
+\begin{equation}
+\pi = \pi P\,.
+\end{equation}
+$$
+
+Rewriting this gives us
+$$
+\begin{equation}
+\pi \mathcal{L} = \bm{0} \,.
+\end{equation}
+$$
+
+Note that this equation is actually *underdetermined* because any scalar multiple of $\pi$ will also solve the above problem. This can be solved by adding the additional constraint that the entries of $$\pi$$ should sum to $$1$$,
+$$
+\begin{equation}
+\sum_x \pi(x) = 1 \,.
+\end{equation}
+$$
+
+If the graph is aperiodic and connected, these system of equations will give the unique stationary distribution (see fundamental theorem of Markov chains). In particular, in this situtation the generator $\mathcal{L}$ has exactly one zero eigenvalue, corresponding to the all-ones vector $\bm{1}$,
+$$
+\begin{equation}
+\mathcal{L} \bm{1} = \bm{0} \,.
+\end{equation}
+$$
+This is the right zero eigenvector of $\mathcal{L}$, the left zero eigenvector of $\mathcal{L}$ is $\pi$.
+
+## Duality
+
+In the above section, we saw a hint of what is called *duality*. In particular, it is the duality between *functions* on the vertex set $V$ and *distributions* on the vertex set $V$. This notion of duality is worth investigating because it reveals two fundamental approaches to computations involving these types of stochastic processes, forward and backward computation. 
+
+First, let us denote the set of real-valued functions on $V$ via $V^{\mathbb{R}}$. Note that $V^{\mathbb{R}}$ is a vector space. The **dual space** $(V^{\mathbb{R}})^*$ is defined as the set of all linear functionals $\pi : V^{\mathbb{R}} \rightarrow \mathbb{R}$. That is, functionals satisfying
+$$
+\begin{equation}
+\pi[\alpha f + \beta g] = \alpha \pi[f] + \beta \pi[g] \,.
+\end{equation}
+$$
+This space is itself a vector space over $\mathbb{R}$ because you can add two distributions $\pi_1$ and $\pi_2$ together via:
+$$
+\begin{equation}
+(\pi_1 + \pi_2)[f] = \pi_1[f] + \pi_2[f] \,.
+\end{equation}
+$$
+
+Linearity and finite dimensionality allows us to find a correspondance between the space $V^{\mathbb{R}}$ and the dual space $(V^{\mathbb{R}})^*$. If we let $\bm{1}_v$ denote the indicator function on the vertex $v$ (i.e., $1$ on $v$ and zero elsewhere), any function on $V$ can be written as:
+$$
+\begin{equation}
+f = \sum_v f(v) \bm{1}_v \,.
+\end{equation}
+$$
+And hence, any distribution on $\pi$ can be computed as:
+$$
+\begin{equation}
+\pi[f] = \sum_v f(v) \pi[\bm{1}_v] \,.
+\end{equation}
+$$
+
+This is why, for finite linear algebra, one can save time and just define $\pi$ as a vector with entries $\pi(v) = \pi[\bm{1}_v]$. By convention, distributions $\pi$ are treated as *row-vectors* whereas functions $f$ are treated as *column-vectors*. This means that the product of the two as vectors corresponds to the evaluation of the distribution:
+$$
+\begin{equation}
+\pi f = \sum_v \pi(v) f(v) = \sum_v f(v) \pi[\bm{1}_v] = \pi[f]
+\end{equation}
+$$
+
+In particular, $\pi$ is said to be a *probability distribution* if the following is true,
+$$
+\begin{equation}
+\begin{split}
+\pi[\bm{1}_v] &\geq 0 \,, \\
+\pi[\bm{1}] &= 1 \,.
+\end{split}
+\end{equation}
+$$
+where $\bm{1}$ is the function that takes value $1$ everywhere. When this happens, the product between $\pi$ and $f$ is the *expected value* of $f(X)$ for a random variable $X \sim \pi$,
+$$
+\begin{equation}
+\pi f = \mathbb{E}_{X \sim \pi}[f(X)] \,.
+\end{equation}
+$$
+
+Why is this picture useful good for computation? Well, observe that if $X_t$ is a Markov chain with transition probability matrix $P$, then we have that
+$$
+\begin{equation}
+\mathbb{E}[f(X_t)] = \pi_t f = (\pi_0 P^t) f = \pi_0 (P^t f) \,.
+\end{equation}
+$$
+
+This is somewhat profound because it shows us that there two two completely different approaches to computing the expected value of $f(X_t)$ at time $t$:
+
+1. **Forward**: Compute the probability distribution $\pi_t = P^t \pi_0$ and then take the product with $f$.
+2. **Backward**: Compute the quantity $f^{(t)} = P^t f$ and then take the product with the initial probability $\pi_0$.
+
+The first method of computation is pretty clear, we simply take the initial probability distribution $\pi_0$ of the Markov chain and evolve it forward in time. However, the second method of computation is a little profound: we can take the final value function $f^{(t)} = f$ at time $t$ and evolve it *backwards* in time to get a function $f^{(0)}$. This is the crux of duality for stochastic processes, probability distributions always evolve *forward* in time, whereas value functions (things we compute expectations of) evolve *backward* in time. The latter is very closely related to the Heisenberg picture from quantum physics -- we don't actually ever have to think about the initial state of the system, we only need to think about the quantity $f^{(t)}$ that we want to evaluate at time $t$ and this will give us a corresponding quantity $f^{(0)}$ that can be evaluated at time $0$ with any starting probability distribution. Let us examine the equations governing the evolution of these objects in the next two sections.
+
+### The Forward Kolmogorov Equation
+
+First we look at the governing equations for the evolution of probability distributions. Let us recall from the previous section that the equation governing the evolution of the probability distributions $\pi_t$ is given by
+$$
+\begin{equation}
+\pi_{t+1}=\pi_t P \,.
+\end{equation}
+$$
+
+By subtracting $\pi_t$ from both sides, we arrive at
+$$
+\begin{equation}
+\pi_{t+1} - \pi_t = \pi_t (P - I) \,.
+\end{equation}
+$$
+which can be rewritten as
+$$
+\begin{equation}
+\Delta_t \pi_t = \pi_t \mathcal{L} \,.
+\end{equation}
+$$
+
+where $\mathcal{L} = P - I$ is the generator of $X_t$ (i.e., the graph Laplacian) and $\Delta_t$ is the discrete time derivative. This is the discrete-time forward Kolmogorov equation or the discrete-time heat equation. Note the similarity of this equation to the continuous heat equation,
+$$
+\begin{equation}
+\frac{\partial \pi_t}{\partial t}=\frac{1}{2} \Delta \, \pi_t \,,
+\end{equation}
+$$
+where $\Delta$ is the continuous Laplacian. However, there are some notable differences between the discrete and continuous heat equations. The factor of $\frac{1}{2}$ is to some extent the result of convention, but it is hard to explain away for now. Morally, you should think of $\mathcal{L}$ as the discrete analogue of $\frac{1}{2} \Delta$ (note the factor of $1/2$ that appeared in the introduction section). Indeed, on grid graphs, an appropriately normalized $\mathcal{L}$ ($\mathcal{L}$ is symmetric on grid graphs) will "converge" to $\frac{1}{2} \Delta$ as the grid becomes infinitely fine. This bridge allows us to translate intuition between the worlds discrete spectral graph theory and continuous PDEs.
+
+### The Backward Kolmogorov Equation
+
+In constrast to probability distributions, value functions $f$ are evolved via the expression
+$$
+\begin{equation}
+f^{(t - 1)} = P f^{(t)} \,. 
+\end{equation}
+$$
+We therefore perform the same calculation as the previous section to arrive at
+$$
+\begin{equation}
+f^{(t)} - f^{(t - 1)} = -(P - I) f^{(t)} \,. 
+\end{equation}
+$$
+$$
+\begin{equation}
+\nabla_{t} f^{(t)} = -\mathcal{L} f^{(t)} \,,
+\end{equation}
+$$
+where $\nabla_t$ is the backward finite difference operator. The negative sign arises from the fact that we are evolving this equation *backwards* in time. If we substitute variables $t = T - s$ we instead get
+$$
+\begin{equation}
+\Delta_{s} f^{(s)} = \mathcal{L} f^{(s)} \,.
+\end{equation}
+$$
+
+However, we can ask for a fair bit more than this. Instead of just having a payoff $f$ at time $t$, we can have a series of payoffs at different times. Let us modify the discounted reward problem a bit to turn it into a time evolution problem. Suppose we have a similar setup as before: i.e., we have a process $X_t$ on the graph $G=(V,E)$. However, this time, the reward function $f(x)$ is allowed to be time dependent, so it is a function both of a vertex $x$ and a time $t$. Suppose, that we let the process $X_t \in V$ run on the graph until time $\tau \in \mathbb{N}$, and at every time step, it collects $f(X_t, t)$ reward until time $\tau$, when it collects $g(X_\tau)$ terminal reward and the game ends. Note that unlike $T$ from the previous section, which is a stopping time, and may be random, $\tau$ is simply a constant that we choose before hand. Now, we ask the question: given we start the game with $X_0=x$, what is the expect amount of (discounted) reward that $X_t$ accumulates in time up to $\tau$? That is, we want to compute the *value function* of the state $x$,
+$$
+\begin{equation}
+V(x)=\mathbb{E}\left[\sum_{r = 0}^{\tau - 1} \gamma^r f(X_r,t) + \gamma^\tau g(X_\tau) \mid X_0=x\right]\,.
+\end{equation}
+$$
+One way to solve this problem is by recursion. Let us extend the value function to starting times $t>0$. We do this as follows:
+$$
+\begin{equation}
+V(x,t)=\mathbb{E}\left[\sum_{r = t}^{\tau - 1} \gamma^{r-t} f(X_r,t) + \gamma^{\tau -t} g(X_\tau) \mid X_t = x\right]\,.
+\end{equation}
+$$
+That is, $V(x,t)$ is the expected reward collected if we start at time $t$ and at state $x$.  We can use *first transition analysis* to write down an equation for this function that we can then solve,
+$$
+\begin{equation}
+\begin{split}
+V(x,t) &= f(X_t,t)+\gamma \sum_v P(x,v) \, \mathbb{E}\left[\sum_{r = t + 1}^{\tau-1} \gamma^{r-t-1} f(x,t) + \gamma^{\tau - t - 1} \mid X_{t+1}=v\right] \\
+&=f(X_t,t)+ \gamma \sum_v P(x,v) \, V(v,t+1) \,.
+\end{split}
+\end{equation}
+$$
+Note that the above is a linear system for the $\{V(x,s)\}_{x\in V}$ in terms of the $\{V(x,t+1)\}_{x \in V}$. Therefore, since we have the boundary condition
+$$
+\begin{equation}
+V(x,\tau)=g(x) \,,
+\end{equation}
+$$
+we can recursively solve for the $V(x,t)$ backwards in time until we get the $V(x,0)$ we originally desired. Let's rewrite the system of equations to put it into a more (subjectively) digestable form,
+$$
+\begin{equation}
+V(x,t) - V(x,t+1) = \left(\gamma\sum_v P(x,v) V(v,t+1) - V(x,t+1)\right) + f(X_t, t) \,.
+\end{equation}
+$$
+
+Note we have simply multiplied subtracted $V(x,t+1)$ from both sides. Note also that the left hand side of the equation is essentially a time derivative of $V$. Thus, we can write the whole equation above in matrix form as
+$$
+\begin{equation}
+\nabla_t V_{t + 1} = -(\gamma P - I) V_{t+1} - f_t \,.
+\end{equation}
+$$
+
+Where $\nabla_t$ is the backward finite difference time derivative. When the discount factor $\gamma$ is identity, we get
+$$
+\begin{equation}
+\begin{split}
+\nabla_t  V_{t} = -\mathcal{L}  V_{t} - f_{t - 1}\,, &\qquad \text{for } 0 \leq t < \tau \\
+V_{\tau} = g \,.&
+\end{split}
+\end{equation}
+$$
+
+Note that the negative signs here are an artifact of the fact that we are solving backwards in $t$. If instead we rewrite $s = \tau - t$, then we have
+$$
+\begin{equation}
+\begin{split}
+\Delta_s V_{s} = \mathcal{L} V_{s} + f_{s + 1} \,, &\qquad \text{for } 0 < s \leq \tau \\
+V_{0} = g \,.&
+\end{split}
+\end{equation}
+$$
+
+Compare this to the continuous backward heat equation with an inhomogenous term,
+$$
+\begin{equation}
+-\frac{\partial V}{\partial t} = \frac{1}{2} \Delta V + f \,.
+\end{equation}
+$$
+We will examine how all of these results from the discrete case carry over into the continuous case in subsequent sections.
+
+You should also compare it to the forward Kolmogorov equation and note that the since the forward equation involves vector multiplication on the left, it effectively involves the transpose/adjoint $\mathcal{L}^*$ of the operator $\mathcal{L}$. A good way to make sense of this is to think of $\mathcal{L}$ in the following way: essentially, $\mathcal{L}^*$ generates the evolution of distributions forwards in time, while $\mathcal{L}$ generates the evolution of value functions / test functions backwards in time. When the underlying process $X_t$ is reversible (i.e., $Y_t=X_{−t}$ is the same process as $X_t$, so the process looks the same when time is reversed), we have that $\mathcal{L}^*=\mathcal{L}$ and the backwards and forwards equations are the same. This is a manifestation of the fact that the evolution of the process forward in time and backward in time are indistinguishable. This happens to be the case on grid graphs.

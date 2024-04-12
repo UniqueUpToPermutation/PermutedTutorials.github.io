@@ -1,7 +1,7 @@
 {
   "index": "Introduction",
-  "light1" : "Light Transport",
+  "light1" : "Light Transport and Stochastic Q-Processes",
   "sdeandpde": {
-    "title": "Stochastic Processes and Elliptic Equations"
+    "title": "Stochastic Processes and Differential Equations"
   }
 }

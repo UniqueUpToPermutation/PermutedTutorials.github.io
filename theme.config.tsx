@@ -2,7 +2,7 @@ import React from 'react'
 import { DocsThemeConfig } from 'nextra-theme-docs'
 
 const config: DocsThemeConfig = {
-  logo: <span>Mathematics Tutorials</span>,
+  logo: <span>Random Math Tutorials with Drift</span>,
   project: {
     link: 'https://github.com/UniqueUpToPermutation',
   },

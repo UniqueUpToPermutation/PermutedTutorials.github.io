@@ -1,4 +1,4 @@
-# Light Transport
+# Light Transport and Stochastic Q-Processes
 
 ![image](/physics/light/Hand.jpg)
 
@@ -122,7 +122,7 @@ If we fix $$\omega$$, you might recognize this as the transport equation from pa
 
 Of course, the above equations are very simplistic. They simply say that photons move in straight lines when in free space. Though this is useful, often-times photons are moving through a medium where they constantly collide with other particles and are scattered and absorbed throughout. The different ways materials scatter light are wholy reasonable for the different ways they look. For example, in the above figure, light enters the lion and then scatters around inside it until it exists and hits the viewer's eye. This gives the impression of soft lighting and partial translucency (see how the tail lets some light through with its red-orange highlights). So, if we are going to talk about light transport with an eye towards rendering things like the statue above, we are going to need to discuss how light changes direction.
 
-Unfortunately, this process is not deterministic. Or at least, it is not deterministic from the macroscopic viewpoint. Two light particles can hit the same surface and be reflected in completely different directions. We model this by saying that a light particle hitting a material (or fluid) at location $$x$$ in direction $$\omega_i$$ has a certain probability of being redirected in direction ωoωo​. It also has a certain probability of being absorbed. In the most general case, we want to think about rates rather than concrete probabilities. When a photon enters a scattering medium like the one pictured above, the photon will move a certain distance until it impacts something in the medium that redirects it. You should think of the contents of the medium as being random, and hence the distance travelled before a photon impacts an obstacle will be random as well. The average distance travelled before a photon hits an obstacle (i.e. scatters) is called the *mean free path*. The higher the mean free path, the more the photon can travel through the medium unobstructed and therefore the clearer the medium.
+Unfortunately, this process is not deterministic. Or at least, it is not deterministic from the macroscopic viewpoint. Two light particles can hit the same surface and be reflected in completely different directions. We model this by saying that a light particle hitting a material (or fluid) at location $$x$$ in direction $$\omega_i$$ has a certain probability of being redirected in direction ωoωo. It also has a certain probability of being absorbed. In the most general case, we want to think about rates rather than concrete probabilities. When a photon enters a scattering medium like the one pictured above, the photon will move a certain distance until it impacts something in the medium that redirects it. You should think of the contents of the medium as being random, and hence the distance travelled before a photon impacts an obstacle will be random as well. The average distance travelled before a photon hits an obstacle (i.e. scatters) is called the *mean free path*. The higher the mean free path, the more the photon can travel through the medium unobstructed and therefore the clearer the medium.
 
 Let us take this information and think about the parameters of a particle $$(X_t,\omega_t)$$ travels through a homogenous scattering medium. Occasionally $$\omega_t$$ will suddenly change randomly when the particle hits something. But how do we characterize this randomness?
 
@@ -189,4 +189,469 @@ $$
 \end{equation}
 $$
 
-where $$\mathcal{L}^*$$ is the adjoint of $$\mathcal{L}$$ (i.e., $$\mathcal{L}^*(\omega_i, \omega_o) = \mathcal{L}(\omega_o, \omega_i)$$). This equation is called the forward equation for a $$Q$$-process. Here, one says that the operator $$\mathcal{L}^*$$ generates the time evolution of $$\rho_t$$​. This is very similar to deriving the forward equations for a random walk by using Ito's lemma.
+where $$\mathcal{L}^*$$ is the adjoint of $$\mathcal{L}$$ (i.e., $$\mathcal{L}^*(\omega_i, \omega_o) = \mathcal{L}(\omega_o, \omega_i)$$). This equation is called the forward equation for a $$Q$$-process. Here, one says that the operator $$\mathcal{L}^*$$ generates the time evolution of $$\rho_t$$. This is very similar to deriving the forward equations for a random walk by using Ito's lemma.
+
+## The Statistics of Scattering Events
+
+The next question one might ask is for the actual statistics of the scattering times $$T_1, T_2, ..., T_n$$. These are relatively straightforward. Note that the $$Q$$-process is Markovian and hence the intervals $$\Delta T_i =T_i-T_{i-1}$$ are independent and identically distributed. This makes sense, because once the particle has scattered, it doesn't care about anything other than its current position and orientation. In other words, the path a particle has taken to get to a certain point is irrelevant, it is only the current state that matters. To derive statistics for the $$\Delta T_i$$, we need to consider the distribution $$\rho_t^{(0)}(\omega)$$. $$\rho_t^{(0)}(\omega)$$ is defined as the distribution of particles that have not yet scattered. At any given time the probability that a particle scatters in the next $$dt$$ seconds is given by:
+
+$$
+\begin{equation}
+\begin{split}
+&\mathbb{P}(\text{Particle moving in direction } \omega \text{ scatters in next dt seconds}) \\
+&\quad =\left[\int_{\mathbb{S}^2} \sigma(\omega,\omega_o)\, d\Omega(\omega_o)\right]\, dt + o(dt) = \mu_s(\omega)\, dt+o(dt)\,. 
+\end{split}
+\end{equation}
+$$
+
+Let $$N[t,s]$$ be the number of scattering events between times $$t$$ and $$s$$. We can determine the distribution of the scattering time $$T$$ as follows (we simply write $$T$$ here for a random variable with the distribution of $$\Delta T_i$$):
+
+$$
+\begin{equation}
+\mathbb{P}(T \in dt(t)) = \mathbb{P}(N[0,t]=0 \text{ and } N[t,t+dt]=1) \,.
+\end{equation}
+$$
+
+For disjoint intervals $$A$$ and $$B$$, a property of the $$Q$$-process is that $$N(A)$$ and $$N(B)$$ are independent. Therefore, we have that
+$$
+\begin{equation}
+\begin{split}
+\mathbb{P}(T \in dt(t)) &=\mathbb{P}(N[0,t]=0) \mathbb{P}(N[t,t+dt]=1) \\
+&=\mathbb{P}(N[t,t+dt]=1)\prod_{n=0}^{t/dt-1}\mathbb{P}(N[ndt, (n+1)dt]=0) \,.
+\end{split}
+\end{equation}
+$$
+
+We now use the fact that $$\mathbb{P}(N[t,t+dt]=1)=\mu_s(\omega)dt+o(dt)$$ and $$\mathbb{P}(N[t,t+dt]=0)=1-\mu_s(\omega)dt+o(dt)$$ to get:
+
+$$
+\begin{equation}
+\mathbb{P}(T \in dt(t))=(\mu_s(\omega)dt)(1-\mu_s(\omega)dt)^{t/dt}.
+\end{equation}
+$$
+
+Recall that
+$$
+\begin{equation}
+\lim_{⁡n\rightarrow \infty}\left(1-\frac{1}{n}\right)^n = e\,.
+\end{equation}
+$$
+
+Therefore, we get
+$$
+\begin{equation}
+\mathbb{P}(T \in dt(t))= \mu_s(\omega)e^{-\mu_s(\omega)t} \, .
+\end{equation}
+$$
+
+This is the exponential distribution with rate $$\lambda=\mu_s(\omega)$$, hence the times between scattering events have distribution
+$$
+\begin{equation}
+T \sim \text{Exp}(\mu_s(\omega)) \,.
+\end{equation}
+$$
+
+A nice outcome of this fact is that we can easily compute the mean scattering time to be:
+$$
+\begin{equation}
+\mathbb{E}[T]=1/\mu_s(\omega) \,.
+\end{equation}
+$$
+
+The mean free path is therefore
+$$
+\begin{equation}
+\ell=\mathbb{E}[cT]=c/\mu_s(\omega)\,.
+\end{equation}
+$$
+
+If the medium is isotropic (i.e., the function $$\sigma(\omega_i, \omega_o)$$ is rotationally invariant), then $$\mu_s(\omega)$$ does not depend on $$\omega$$ and this can just be written as
+$$
+\begin{equation}
+\ell=c/\mu_s \,.
+\end{equation}
+$$
+
+## Full Eulerian Formulation
+
+One can obtain a full Eulerian formulation for the evolution of $$\rho_t(x,\omega)$$ as follows. Let us consider the number of particles in a set $$A$$ with direction $$\omega$$, i.e.,
+$$
+\begin{equation}
+\int_A \rho_t(x,\omega) \, dx \,.
+\end{equation}
+$$
+
+The change in the number of particles in $$A$$ moving in direction $$\omega$$ is given by the particle flux through the boundary $$\partial A$$ as well as the particles inside $$A$$ that scatter either from some direction $$\omega_i$$ to $$\omega$$ or scatter from direction $$\omega$$ to some direction $$\omega_o$$. We can write this as
+$$
+\begin{equation}
+\begin{split}
+\int_A \rho_{t+dt}(x,\omega)\, dx&=\int_A \rho_t(x,\omega) \,dx \\
+&\quad-dt \int_{\partial A} \rho_t(x,\omega)(c\omega \cdot dn) + dt \int_{A} \mathcal{L}_\omega^∗ \rho_t(x,\omega)\, dx\,.
+\end{split}
+\end{equation}
+$$
+
+The $$cdt \int_{\partial A} \rho_t(x,\omega) (\omega \cdot dn)$$ represents the sum of all particles that move out of the region $$A$$ over a time interval $$dt$$ and the $$dt \int_{A} \mathcal{L}_\omega^∗ \rho_t(x,\omega)\, dx\, dt$$ represents the change in particle number from scattering inside the region $$A$$ (as we derived two sections ago). Stokes' Theorem can be applied to the term over $$\partial A$$ to get
+$$
+\begin{equation}
+\begin{split}
+\int_A \rho_{t+dt}(x,\omega) \, dx &= \int_A \rho_t(x,\omega) \, dx \\
+&\quad -cdt \int_{A} \omega \cdot \nabla_x \rho_t(x,\omega)\, dx+dt\int_{A}\mathcal{L}_\omega^∗ \rho_t(x,\omega)\,dx\,.
+\end{split}
+\end{equation}
+$$
+
+Since this is true for any $$A$$, it must be the case that
+$$
+\begin{equation}
+\rho_{t+dt}(x,\omega)=ρ_t(x,\omega)-c\omega \cdot \nabla_x \\rho_t(x,\omega)\, dt +\mathcal{L}_ω^∗ \rho_t(x,\omega) \, dt \,.
+\end{equation}
+$$
+
+Now rearranging and letting $$dt \rightarrow 0$$,
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t}(x,\omega) = -c\omega \cdot \nabla_x \rho_t(x,\omega)+ \mathcal{L}_\omega^∗ \rho_t(x,\omega) \, .
+\end{equation}
+$$
+
+Voila. This is the Eulerian formulation of light transport in a homogenous medium with phase function $$\sigma(\omega_i, \omega_o)$$. Writing it out in full gives:
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t} (x,\omega)=-c\omega\cdot\nabla_x \rho_t(x,\omega) + \int_{\mathbb{S}^2} \rho_t(x, \omega') \sigma(\omega',\omega) \, d\Omega(\omega') - \mu_s(\omega) \rho_t(x,\omega) \,.
+\end{equation}
+$$
+
+For comparison, the Langrangian form of these equations is
+$$
+\begin{equation}
+\frac{dX_t}{dt} = cW_t \,,
+\end{equation}
+$$
+
+where $$W_t$$ is a $$Q$$-process on $$\mathbb{S}^2$$ with generator $$\mathcal{L}$$.
+
+## Isotropic Scattering
+
+The simplest example of a scattering medium is one that is fully isotropic, i.e., regardless of the incomming and outgoing directions $$\omega_i$$ and $$\omega_o$$, the rate of scattering is the same. That is,
+$$
+\begin{equation}
+\sigma(\omega_i, \omega_o) = \sigma \,.
+\end{equation}
+$$
+
+Usually this is referred to as **isotropic** scattering. In this case, the scattering coefficient $$\mu_s$$ does not depend on $$\omega$$ and is easily calculated to be
+$$
+\begin{equation}
+\mu_s = 4 \pi \sigma \,.
+\end{equation}
+$$
+
+The equations in the previous section now take on the form
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t}(x,\omega)=-c\omega\cdot\nabla_x \rho_t(x,\omega)+ \mu_s \bar{\rho}_t(x) - \mu_s \rho_t(x,\omega) \,.
+\end{equation}
+$$
+
+Here $$\bar{\rho}_t$$ is shorthand for the average photon density at $$x$$ over all directions $$\omega$$,
+$$
+\begin{equation}
+\bar{\rho}_t(x)=\frac{1}{4\pi} \int_{\mathbb{S}^2} \rho_t(x,\omega) \, d\Omega(\omega) \,.
+\end{equation}
+$$
+
+## Scattering in Heterogenous and Absorbing Media
+
+In the previous examples, we assumed that the scattering medium was the same everywhere, i.e., that the phase function $$\sigma(\omega_i,\omega_o)$$ did not depend on $$x$$. In this section, we see what happens when the phase function $$\sigma(\omega_i,\omega_o)$$ does depend on $$x$$. This is relatively common, many objects are not entirely uniform. For example, your hand scatters light, but your hand is not uniformly made of the same material. There's skin, muscle, bone, blood, etc. And each of these materials have different properties. How do we model this? Well, now the statistics of the direction $$\omega_t$$ of a particle will depend heavily on that particle's position and path.
+
+If this is the case, then $$W_t$$ is now a $$Q$$-process whose phase function $$\sigma(\omega_i,\omega_o)$$ changes depending on the position XtXt of the particle. We will write the new phase function as $$\sigma(x;\omega_i,\omega_o)$$. This means that the generator of the process now depends explicitly on the value of $$x$$. Hence, we have
+$$
+\begin{equation}
+\mathcal{L}(x,\omega_i,\omega_o)=\sigma(x,\omega_i,\omega_o)-\mu_s(x,\omega_i) \, \delta(\omega_i,\omega_o) \,.
+\end{equation}
+$$
+where once again,
+$$
+\begin{equation}
+\mu_s(x,\omega)=\int_{\mathbb{S}^2} \sigma(x,\omega,\omega_o) \, d\Omega(\omega_o) \,.
+\end{equation}
+$$
+
+In addition to this, we also give a particle a certain probability of being absorbed at any point in time. This probability is quantified by the absorption coefficient $$\mu_a(x,\omega)$$ which is defined in a similar way to the phase function:
+$$
+\begin{equation}
+\begin{split}
+&\mathbb{P}(\text{Particle with direction }\omega\text{ at }x\text{ is absorbed over a period } dt) \\
+&\quad = \mu_a(x,\omega)\, dt+o(dt) 
+\end{split}
+\end{equation}
+$$
+
+What this means is that the $$Q$$-process $$W_t$$ now has a chance of jump to a dead state from which it can never return. Therefore, the number of particles in a region $$A$$ now changes over a small period dtdt according to:
+$$
+\begin{equation}
+\begin{split}
+\int_A \rho_{t+dt}(x,\omega) \, dx &= \int_A \rho_t(x,\omega) \, dx - \left[\int_{\partial A} \rho_t(x,\omega) (c\omega\cdot dn)\right]\, dt \\
+&\quad +\left[\int_A \int_{\mathbb{S}^2} \rho_t(x,\omega_i)\sigma(x,\omega_i,\omega)\, d\Omega(\omega_i)\, dx\right] \, dt \\
+&\quad -\left[\int_A \int_{\mathbb{S}^2} \rho_t(x,\omega)\sigma(x,\omega,\omega_o)\, d\Omega(\omega_o)\, dx\right]\, dt \\
+&\quad - \left[\int_A \mu_a(x,\omega)\rho_t(x,\omega)\, dx\right]\,dt+o(dt)\,.
+\end{split}
+\end{equation}
+$$
+
+The terms with a $$dt$$ factor represent, in order of appearence:
+
+1. The net number of particles that leave the region $$A$$.
+2. The number of particles that are scattered in $$A$$ from some direction $$\omega_i$$ to $$\omega$$.
+3. The number of particles that are scattered in $$A$$ from $$\omega$$ to some other direction $$\omega_o$$.
+4. The number of particles absorbed in $$A$$.
+
+Repeating the procedure of the previous section will give us:
+$$
+\begin{equation}
+\begin{split}
+\frac{\partial \rho_t}{\partial t}(x,\omega) &= -c\omega\cdot\nabla_x \rho_t(x,\omega)+\int_{\mathbb{S}^2} \rho_t(x,\omega_i) \sigma(x,\omega_i,\omega)\, d\Omega(\omega_i) \\
+&\quad -(\mu_s(x,\omega)+\mu_a(x,\omega)) \rho_t(x,\omega)\,.
+\end{split}
+\end{equation}
+$$
+
+Alternatively, we can just write this as:
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t} = \mathcal{L}_{x,\omega}^∗ \rho_t\,,
+\end{equation}
+$$
+
+Where the generator $$\mathcal{L}_{x,\omega}$$ of the full joint process $$(X_t,W_t)$$ is given by:
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L}_{x,\omega} \rho(x,\omega) &= c\omega\cdot\nabla_x \rho_t(x,\omega) + \int_{\mathbb{S}^2} \sigma(x,\omega,\omega_o) \rho_t(x,\omega_o)\, d\Omega(\omega_o) \\
+&\quad -(\mu_s(x,\omega)+\mu_a(x,\omega)) \,\rho_t(x,\omega) \,.
+\end{split}
+\end{equation}
+$$
+
+We have therefore derived the full radiative transport equation.
+
+## Statistics of Scattering Events
+
+Let us assume for now that the scattering medium is non-absorbing, i.e., that $$\mu_a=0$$ everywhere. Just like in the homogenous case, every particle will have a series of scattering times $$T_1,T_2,...,T_n,...$$. The difference now is that these scattering times depend explicitly on the path the photon is travelling along.
+
+We can calculate the statistics of scattering events by using the same trick as last time. Let $$N[t,s]$$ be the number of scattering events in the time interval $$[t,s]$$. Suppose that the particle has direction ωω and is traveling along the ray $$X_t(0)=X_0+c\omega t$$. The we have that:
+$$
+\begin{equation}
+\begin{split}
+\mathbb{P}(T \in dt(t)) &= \mathbb{P}(N[t,t+dt]=1) \prod_{n=0}^{t/dt-1} \mathbb{P}(N[n \, dt,(n+1)dt]=0) \\
+&= \mu_s(X_t(0),\omega)\prod_{n=0}^{t/dt-1}(1-\mu_s(X_{n\,dt})dt) \,.
+\end{split}
+\end{equation}
+$$
+
+When $$x \ll 1$$, we know that $$1-x \sim \exp⁡(-x)$$. Therefore,
+$$
+\begin{equation}
+1- \mu_s(X_{n \, dt})\,dt \sim \exp(-\mu_s(X_{n\,dt})dt) \,.
+\end{equation}
+$$
+
+We then have:
+$$
+\begin{equation}
+\mathbb{P}(T \in dt(t)) = \mu_s(X_t^{(0)},\omega) \exp\left(\sum_{n=0}^{t/dt-1} \mu_s(X_{n\,dt}^{(0)},\omega) \, dt\right)\, dt \,.
+\end{equation}
+$$
+
+As $$dt \rightarrow 0$$ this converges to
+$$
+\begin{equation}
+\mathbb{P}(T \in dt(t))= \mu_s(X_t^{(0)},\omega)\exp\left(-\int_0^t\mu_s(X_s^{(0)}\omega) \, ds\right) \, dt \,.
+\end{equation}
+$$
+
+Therefore, if one wishes to simulate a photon scattering in a heterogenous medium, one might sample scattering times from the above distribution.
+
+## Statistics of Absorption Events
+
+The above section only covers scattering events. However, a photon may experience either a scattering or an absorption event while it is traversing through a medium. Recall, that photons travelling in direction $$\omega$$ at a position $$x$$ are absorbed at a rate $$\mu_a(\omega)$$. Combining this with scattering events, at every time step of $$dt$$, a photon has a probability $$\mu_a(\omega)\, dt$$ of being absorbed and a $$\mu_s(\omega)\, dt$$ probability of being scattered. Let $$A$$ be the event where the photon is absorbed. Therefore, one can follow the derivation of the previous section to obtain:
+$$
+\begin{equation}
+\begin{split}
+\mathbb{P}(T \in dt(t), A) &= \mu_a(X_t^{(0)}, \omega)\exp\left(-\int_0^t (\mu_s(X_s^{(0)}, \omega)+\mu_a(X_s^{(0)}, \omega))\, ds\right) \, dt \\
+\mathbb{P}(T \in dt(t), \bar{A}) &= \mu_s(X_t^{(0)},\omega) \exp\left( -\int_0^t (\mu_s (X_s^{(0)}, \omega) + \mu_a(X_s^{(0)}, \omega)) \, ds \right) \, dt
+\end{split}
+\end{equation}
+$$
+
+Therefore, the probability that the photon is absorbed is given by:
+$$
+\begin{equation}
+\mathbb{P}(A)=\int_0^\infty \mu_a(X_t^{(0)}, \omega) \exp\left(-\int_0^t(\mu_s(X_s^{(0)},\omega)+\mu_a(X_s^{(0)},\omega)) \, ds \right) \, dt\,.
+\end{equation}
+$$
+
+Similarly, the probability that the photon is scattered is given by:
+$$
+\begin{equation}
+\mathbb{P}(\bar{A}) = \int_0^\infty \mu_s(X_t^{(0)}, \omega) \exp\left(-\int_0^t(\mu_s(X_s^{(0)}, \omega) + \mu_a(X_s^{(0)},\omega)) \, ds\right) \, dt
+\end{equation}
+$$
+
+If the media is homogenous, that is if $$\mu_s(x,\omega)=\mu_s(\omega)$$ and $$\mu_a(x,\omega)= \mu_a(\omega)$$, this reduces to:
+$$
+\begin{equation}
+\begin{split}
+\mathbb{P}(A)&=\frac{\mu_a(\omega)}{\mu_a(\omega)+\mu_s(\omega)} \, . \\
+\mathbb{P}(\bar{A})&=\frac{\mu_s(\omega)}{\mu_a(\omega)+\mu_s(\omega)}\,.
+\end{split}
+\end{equation}
+$$
+
+## Emissive Media
+
+![light bulb](/physics/light/lightbulb.jpg)
+
+In addition to absorbing and scattering light, a general medium can also emit photons. To quantify this emission, we introduce an emission rate $$j(x,\omega)$$. The quantity of light emitted at $$x$$ in direction $$\omega$$ over a short period $$dt$$ is given by
+$$
+\begin{equation}
+j(x,\omega,t)dt \,.
+\end{equation}
+$$
+
+Therefore, it is relatively simple to see that we should update the Eulerian equations by adding a $$j(x,\omega)$$ term to the right hand side:
+$$
+\begin{equation}
+\frac{\partial \rho_t}{\partial t}(x,\omega)=\mathcal{L}_{x,\omega}^∗ \rho_t(x,\omega) + j(x,\omega,t) \,.
+\end{equation}
+$$
+
+Or written out in full:
+$$
+\begin{equation}
+\begin{split}
+\frac{\partial \rho_t}{\partial t}(x,\omega)&=-c\omega\cdot \nabla_x \rho_t(x,\omega)+\int_{\mathbb{S}^2} \rho_t(x,\omega_i) \sigma(x,\omega_i,\omega) \, d\Omega(\omega_i) \\
+&\qquad -(\mu_s(x,\omega)+\mu_a(x,\omega)) \rho_t(x,\omega)+j(x,\omega,t)\,.
+\end{split}
+\end{equation}
+$$
+
+Lights are examples of emissive materials.
+
+## Steady-State Radiative Transfer
+
+Often times, we aren't interested in the evolution of the distribution $$\rho_t(x,\omega)$$ over a short time scale, but rather, we're interested in the average distribution over a very long time. Our eyes act like integrators, so if we want to talk about rendering, we care about the time averaged distribution of photons,
+$$
+\begin{equation}
+\rho(x,\omega)= \lim_{T \rightarrow \infty}\frac{1}{T} \int_0^T \rho_t(x,\omega) \,.
+\end{equation}
+$$
+
+This time-averaged distribution should represent a sort of "steady state" of the system when a given $$j(x,\omega,t)$$ is applied as an input. Computing this also requires time integrating out fluctuations in the emissive term $$j(x,\omega,t)$$,
+$$
+\begin{equation}
+\bar{j}(x,\omega)=\lim_{T\rightarrow\infty}\frac{1}{T}\int_0^T j(x,\omega,t) \,.
+\end{equation}
+$$
+
+At equilibrium, we expect that the distribution of light no longer changes, so an easy way to compute it is to set
+$$
+\begin{equation}
+\frac{\partial\rho}{\partial t}= 0 \,.
+\end{equation}
+$$
+
+This can be written out as:
+$$
+\begin{equation}
+\begin{split}
+jˉ(x,ω) &= c \omega \cdot \nabla_x \rho(x,\omega) + \int_{\mathbb{S}^2} \rho(x,\omega_i) \sigma(x,\omega_i,\omega)\, d\Omega(\omega_i) \\ 
+& \quad + (\mu_s(x,\omega)+\mu_a(x,\omega)) \rho(x,\omega)\,.
+\end{split}
+\end{equation}
+$$
+
+These are the elliptic equations for the steady state of a radiative transfer system. Note that the equations are linear in $$\rho$$. Therefore, we know that the function ρρ must be linear in $$\bar{j}$$ \,. This linearity can be written in terms of a scattering operator $$\mathcal{S}$$ that acts on the function $$\bar{j}$$. This function corresponds to applying the Green's function $$\mathcal{G}$$ of the elliptic equation above:
+$$
+\begin{equation}
+\rho(x, \omega) = \mathcal{S} \bar{j}(x,\omega)= \int_{\mathbb{R}^3} \int_{\mathbb{S}^2} \mathcal{G}(x,\omega,x',\omega') \bar{j}(x', \omega') \, d\Omega(\omega') \, dx' \,.
+\end{equation}
+$$
+
+## Steady-State Transfer with Boundary Conditions
+
+Often times we're not interested in scattering on the whole of $$\mathbb{R}^3$$, but rather on some restricted domain $$D$$. We can easily imagine the following question: given the geometry and makeup of someone's face, suppose we put a flashlight under it and want to know what the face will look like when after the light propagates through it.
+
+From such a problem to be well posed, we need to specify an ingoing light at the boundary. We will denote this as $$f(x,\omega)$$ (for "flashlight"). $$f(x,\omega)$$ is defined on the boundary $$x \in \partial D$$ for ingoing directions $$\omega \cdot n < 0 $$. Furthermore, we may have emissive materials inside the domain $$D$$, which we will have to model with the function $$\bar{j}(x,\omega)$$ defined on the interior of $$D$$. Therefore, we have
+$$
+\begin{equation}
+\begin{split}
+\bar{j}(x,ω) &= c\omega \cdot \nabla_x \rho(x,\omega)+\int_{\mathbb{S}^2} \rho(x,\omega_i) \sigma(x,\omega_i,\omega) \, d\Omega(\omega_i) \\
+&\quad +(\mu_s(x,\omega)+\mu_a(x,\omega))\rho(x,\omega), \qquad \text{for } x \in \text{int}(D)\,.
+\end{split}
+\end{equation}
+$$
+
+And we have boundary conditions
+$$
+\begin{equation}
+\rho(x, \omega) = f(x,\omega)\, , \qquad \text{for } x \in \partial D \text{ and } \omega \cdot n(x)<0 \,.
+\end{equation}
+$$
+
+In the same way as before, the output $$\rho$$ is linear in the inputs $$f$$ and $$\bar{j}$$. It can therefore be written as:
+$$
+\begin{equation}
+\rho=\mathcal{S}_{\partial D} f + \mathcal{S}_{\text{int}(D)} \bar{j} \,,
+\end{equation}
+$$
+where $$\mathcal{S}_{\partial D}$$ and $$\mathcal{S}_{\text{int}(D)}$$ are scattering operators (from boundary $$\partial D$$ to $$D$$ and interior $$\text{int}(D)$$ to $$D$$ respectively). They also have corresponding Green's functions:
+$$
+\begin{equation}
+\begin{split}
+\rho(x,\omega)& =\int_{\partial D} \int_{\omega' \cdot n(x)<0} \mathcal{G}_{\partial D}(x,\omega, x', \omega') \, d\Omega(\omega') \, dx' \\
+&\quad + \int_{\partial D} \int_{\mathbb{S}^2} \mathcal{G}_{\text{int}(D)} (x,\omega')\, d\Omega(\omega')\,dx'\,.
+\end{split}
+\end{equation}
+$$
+
+The Green's function $$\mathcal{G}_{\partial D}(x,\omega, x', \omega')$$ when the output is restricted to the boundary $$x \in \partial D$$ and $$\omega' \cdot n(x)<0$$ is called the bidirectional scattering distribution function (BSDF) of the object $$D$$.
+
+## Radiant Flux, Irradiance, and Radiance
+
+There are some fundamental quantities that often get tossed around in light transport. It is good to put everything together with standard temonology. Let us go through all the necessary terms one-by-one:
+
+1. **Radiant Flux** (across a surface $$S$$): The radiant flux through $$S$$ is given by the energy that moves through $$S$$ per unit time. Recall that the energy per particle is given by
+$$
+\begin{equation}
+E= \frac{h c}{\lambda}
+\end{equation}
+$$
+Therefore, for monochromatic light with wavelength $$\lambda$$, the radiance flux across $$S$$ is given by:
+$$
+\begin{equation}
+\Phi_t= \frac{dE}{dt} = \frac{hc}{\lambda} \int_{\mathbb{S}^2} \int_{S} \rho_t(x,\omega) (c\omega\cdot dn) \, d\Omega(\omega) \,.
+\end{equation}
+$$
+
+2. **Irradiance**: The irradiance at a location $$x$$ on a surface $$S$$ is a measure of the energy recieved/emitted by the surface per unit time per unit area. It is written as:
+$$
+\begin{equation}
+I_t(x)=\frac{d\Phi}{dA} = \frac{hc}{\lambda} \int_{\mathbb{S}^2} \rho_t(x,\omega)(c\omega\cdot n(x)) \, d\Omega(\omega) \,.
+\end{equation}
+$$
+
+3. **Radiance**: The radiance at a location $$x$$ and in direction $$\omega$$ on a surface is a measure of the energy recieved/emitted by the surface per unit time per unit area per solid angle. It is often written:
+$$
+\begin{equation}
+L_t(x,\omega) = \frac{d^2 \Phi}{dA \, d\Omega} = \frac{dI}{d\Omega} = \frac{hc}{\lambda} \rho_t(x,\omega) (c\omega \cdot n(x)) \,.
+\end{equation}
+$$
+
+It is common to write $$\omega\cdot n(x)$$ as $$\cos \theta$$ where $$\theta$$ is the angle between the direction of the photon $$\omega$$ and the normal $$n(x)$$ of the surface,
+$$
+\begin{equation}
+L_t(x,\omega)=\frac{hc^2}{\lambda} \rho_t(x, \omega) \cos \theta \,.
+\end{equation}
+$$

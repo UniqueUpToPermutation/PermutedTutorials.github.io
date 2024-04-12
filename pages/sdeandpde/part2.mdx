@@ -1,0 +1,654 @@
+# Partial Differential Equations from Continuous Stochastic Processes
+
+![Banner](/sdes/sde2.jpg)
+
+This quick tutorial on the deep connection between elliptic/parabolic systems and stochastic processes. The connection gives a lot of useful intuition about how to interpret elliptic/parabolic PDEs as well as Laplacian systems on graphs. This part covers continuous time stochastic processes and Ito calculus.
+
+> This tutorial is meant for students at the graduate or advanced undergraduate level.
+
+## Moving to Continuous Stochastic Processes: Ito's Formula
+
+Here is where we finally make the jump to continuous time and space. To begin this conversion process, we need to make note that the fundamental analogue of the stochastic graph process $X_t$​ is going to be a continuous space/time Ito process $X_t$​ defined by the stochastic differential equation
+$$
+\begin{equation}
+dX_t = \mu(X_t) \, dt+ \sigma(X_t) \, dB_t​ \,.
+\end{equation}
+$$
+
+where $B_t$​ is a standard Brownian motion (i.e., continuous time random walk). The term $\mu(x)$ is referred to as the drift of the process $X_t$ when it is at $x$ and $\sigma(x)$ is the volitility of the process $X_t$ when it is at $x$. If you've never seen stochastic differential equations before, the above equation shouldn't scare you - you should try to read it defining as the continuous time limit of the following discrete-time process:
+$$
+\begin{equation}
+X_{t + \Delta t} - X_t = \mu(X_t) \Delta t + \sigma(X_t) \,\Delta B_t \,.
+\end{equation}
+$$
+
+where $\Delta B_t \sim \mathcal{N}(0,\Delta t)$ are independent normal variables with mean $0$ and variance $\Delta t$, and the time step $\Delta t$ is taken to be infinitesimally small. 
+
+Here is where we are going to need a bit of Ito calculus. Don't worry! It's just like normal calculus, except instead of just having a single class of standard infinitesimal quantity $dt$, we also have a second class of "special" infinitesimal normal random variables $dB_t$​. Just like in normal elementary calculus, the way we perform any calculation is to expand in powers of $dt$ and $dB_t$​ and then discard anything that is smaller than $d$ (since $dt$ is already infinitesimally small). The caveat is that
+$$
+\begin{equation}
+dB_t \approx \sqrt{dt} \,.
+\end{equation}
+$$
+
+since $dB_t$​ is an infinitesimal normal random variable with variance $dt$ and hence standard deviation $dt$. The way that Ito calculus expresses this equivalence is with the identity
+$$
+\begin{equation}
+(dB_t)^2 = dt \,.
+\end{equation}
+$$
+
+Think of this like an infinitesimal version of the law of large numbers of Gaussian random variables. As $dt$ grows infinitesimally small, the randomness in $(dB_t)^2$ basically vanishes and it becomes a deterministic quantity (in reality the randomness is still there, but it is negligible because it has order less than $dt$, and hence $(dB_t)^2$ concentrates about its expectation, $dt$). Therefore, when taking a Taylor expansion with an infinitesimal variable dtdt and the random variable $dB_t$​ we can discard everything above first order in dtdt or second order in $dB_t$​.
+
+Suppose now that $u(x)$ is a function and we want to say something about the stochastic process $u(X_t)$. Performing a Taylor expansion on $u$ allows us to express the infinitesimal change in $u(X_t)$ in terms of quantities we have already defined and know how to handle,
+$$
+\begin{equation}
+du(X_t)=\frac{\partial u}{\partial x} \, dX_t + \frac{1}{2} \frac{\partial^2 u}{\partial x^2} \, ​(dX_t)^2 \,.
+\end{equation}
+$$
+
+We ignore everything higher than second order because anything smaller than $dt$ is effectively zero. Note that, by definition,
+$$
+\begin{equation}
+dX_t = \mu(X_t) \, dt + \sigma(X_t) \, dB_t \,​, 
+\end{equation}
+$$
+
+And also,
+$$
+\begin{equation}
+(dX_t)^2 = \mu(X_t) \, dt^2 + \frac{1}{2} \sigma^2(X_t) \mu(X_t) \, dB_t \, dt + \sigma^2(X_t​) \, (dB_t​)^2 = \sigma^2(X_t) \, dt \,.
+\end{equation}
+$$
+
+where we have used the identity $(dB_t)^2=dt$, and discarded any terms that are higher order in $dt$. Therefore,
+$$
+\begin{equation}
+du(X_t) = \mu(X_t) \frac{\partial u}{\partial x} dt + \sigma(X_t)\frac{\partial u}{\partial x} dB_t + \frac{1}{2} \sigma^2(X_t) \frac{\partial^2 u}{\partial x^2} \, dt \,,
+\end{equation}
+$$
+
+This formula is the analogue of the chain rule for elementary calculus, and goes by the name of Ito's formula. Note that the presence of randomness adds the $\sigma(X_t) \frac{\partial u}{\partial x} dB_t$​ and $\frac{1}{2}\sigma^2(X_t)\frac{\partial^2 u}{\partial x^2}$ terms to the otherwise standard expressions. The Ito formula is often written as follows
+$$
+\begin{equation}
+du(X_t)=\mathcal{L}u(X_t​) \, dt + \sigma (X_t) \frac{\partial u}{\partial x}​dB_t \,,
+\end{equation}
+$$
+
+where $\mathcal{L}$ is known as the infinitesimal generator of the process $X_t$, and is given by
+$$
+\begin{equation}
+\mathcal{L}=\mu(x)\frac{\partial}{\partial x} + \frac{1}{2}\sigma^2(x) \frac{\partial^2}{\partial x^2} \,.
+\end{equation}
+$$
+
+Now, integrating eq. (9) in time from $t = 0$ to $t = T$ gives
+$$
+\begin{equation}
+u(X_T) - u(X_0) =  \int_0^T \mathcal{L} u (X_t) \, dt  + \int_0^T \sigma (X_t) \frac{\partial u}{\partial x} \, ​dB_t \,.
+\end{equation}
+$$
+
+Taking expectations of both sides and letting $X_0 = x$, we note that the integral above with $dB_t$ becomes zero, since it is the infinite sum of mean-zero random variables. This leaves us with 
+$$
+\begin{equation}
+\mathbb{E}\left[u(X_T) \mid X_0 = x\right] - u(x) = \mathbb{E}\left[ \int_0^T \mathcal{L} u (X_t) \, dt \mid X_0  = x\right] \,.
+\end{equation}
+$$
+
+This gives us an expression for $u(x)$ in terms of the expectation of a stochastic process
+$$
+\begin{equation}
+u(x) = \mathbb{E}\left[u(X_T) - \int_0^T \mathcal{L} u (X_t) \, dt \mid X_0  = x\right] \,.
+\end{equation}
+$$
+
+Of course, this by itself isn't a very useful expression for $u(x)$, because the expression has $u(x)$ on the right hand side. This is where boundary conditions for $u(x)$ typically come in, but we will address this in the next section. First, it is important to note that is actually possible to take $T$ to be a random variable (we won't show it here because that requires some analysis stuff that's beyond the scope of this tutorial). $T$ can be (and is very often taken to be) the hitting time of some set in $\mathbb{R}$. Often times, we let $\Omega \subset \mathbb{R}$ be an interval and then define the stopping time $T$ as the first time at which $X_t$​ hits the boundary of the domain $\Omega$, i.e.,
+$$
+\begin{equation}
+T= \inf_{t} \{ t \mid X_t \in \partial \Omega \} \,.
+\end{equation}
+$$
+
+We can also define higher dimensional versions of $X_t$​ in $\mathbb{R}^n$ instead of in $\mathbb{R}$. In that case, $X_t$ is defined as
+$$
+\begin{equation}
+dX_t = \mu(X_t) \cdot dt + \sigma(X_t) \, dB_t^n \,.
+\end{equation}
+$$
+
+In this SDE, $\mu(x)$ is a vector field on RnRn determining the drift of the process $X_t$​ when it is at $x$ and $\sigma(x)$ determines the volatility (i.e., noise) of the process $X_t$​ when it is at $x$. $dB_t^n$​ denotes the standard multidimensional infinitesimal Brownian motion, i.e., $dB_t^n \sim \mathcal{N}(0, dt)$. In this case we get the same expression for $u(x)$, but the infinitesimal generator becomes
+$$
+\begin{equation}
+\mathcal{L} = \mu(x)\cdot \nabla + \frac{1}{2} \sigma^2(x) \Delta \,.
+\end{equation}
+$$
+
+## Elliptic Partial Differential Equations
+
+We can take the above analysis and use it to get intuition on many of the partial differential equations we are used to seeing in our everyday lives by connecting them to properties of stochastic processes (have you ever read a more ivory tower sentence?). First, let's think of the analogue to our discrete time-game where $X_t$​ wanders around a graph and collects $f(x)$ reward after leaving vertex $x$ and $g(x)$ terminal reward when it reaches a terminal vertex $x \in D$. In the continuous space/time case, we instead consider $X_t$ as a stochastic process on a connected bounded domain $\Omega \subset \mathbb{R}$. The internal reward function $f(x)$ is now defined on $\Omega$ and is interpreted as a rate, i.e., if $X_t$ is at $x$ for a period of time $dt$, then it picks up $f(x) \, dt$ reward. The terminal reward function $g(x)$ is now defined on the boundary $\partial \Omega$. Our expression from the previous section tells us that, if $u(x)$ solves the elliptic PDE with Dirichlet boundary conditions,
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L} u (x) = −f(x)\,,&\qquad\text{on }\Omega \,, \\
+u(x)=g(x)\,,&\qquad \text{on } \partial \Omega \,,
+\end{split}
+\end{equation}
+$$
+
+then eq. (13) tells us that it must satisfy
+$$
+\begin{equation}
+\begin{split}
+u(x) = \mathbb{E}\left[g(X_T) + \int_0^T f(X_t) \, dt \mid X_0  = x\right] \,.
+\end{split}
+\end{equation}
+$$
+This formula provides a very nice probabilistic interpretation of second order elliptic PDEs.
+
+Note in particular, this gives a nice probabilistic form for the solution of the Laplace equation with Dirichlet boundary conditions, i.e.,
+$$
+\begin{equation}
+\begin{split}
+\Delta u(x) = 0\,,&\qquad \text{on }\Omega \,, \\
+u(x)=g(x) \,, &\qquad \text{on } \partial \Omega \,.
+\end{split}
+\end{equation}
+$$
+
+The solution $u(x)$ satisfies the probabilistic expression
+$$
+\begin{equation}
+u(x)=\mathbb{E}[g(B_T) \mid B_0 = x] \,,
+\end{equation}
+$$
+
+where $B_t$​ is a standard Brownian motion. Therefore, *the Laplace equation with Dirichlet boundary conditions is the continuous analogue of the expected terminal reward problem we saw in the discrete version of this tutorial*. Note moreover, that it is possible to use this expression to evaluate $u(x)$ with Monte Carlo without solving the entire equation. This is especially useful in high dimensional settings where solving the Laplace equation can be prohibitively expensive.
+
+### The Maximum Principle for Elliptic Equations
+
+Another outcome of this probabilistic form is the maximum principle. Suppose that $\mathcal{L}$ is an infinitesimal generator of some stochastic process $X_t \in \mathbb{R}^n$, and suppose that the function $u(x)$ satisfies
+$$
+\begin{equation}
+\mathcal{L} u(x) \geq 0\,, \qquad \text{on } \Omega\,.
+\end{equation}
+$$
+
+Note when $\mathcal{L}=\Delta$ such a function $u(x)$ is called **subharmonic** on $\Omega$. If this is the case, then from the probabilistic interpretation of $u(x)$ in the previous section, we have that
+$$
+\begin{equation}
+\begin{split}
+u(x)&=\mathbb{E}\left[\int_0^T -\mathcal{L} u(X_t) \, dt + u(X_T) \mid X_0=x\right] \\
+&\leq\mathbb{E}\left[u(X_T) \mid X_0 =x\right] \leq \sup_{x \in \partial \Omega}(x) \,.
+\end{split}
+\end{equation}
+$$
+
+This is therefore the continuous analogue of the discrete maximum principle we saw earlier in the discrete version of this tutorial.
+
+### Hitting Time Problems
+
+Suppose that we have a stochastic process $X_t$ on $\Omega \subset \mathbb{R}^n$ given by
+$$
+\begin{equation}
+dX_t= \mu(x) \cdot dt + \sigma(x)\, dB_t^n \,,
+\end{equation}
+$$
+
+and we want to ask the continuous analogue of the discrete hitting time problem. That is, how long does it take $X_t$​ to hit the boundary $\partial \Omega$ if it starts from $X_0=x$? We will write this function as
+$$
+\begin{equation}
+u(x)=\mathbb{E}\left[T \mid X_0 = x\right] = \mathbb{E}\left[\int_0^T ​dt \mid X_0 = x \right] \,.
+\end{equation}
+$$
+
+The probabalistic interpretation we derived in the previous sections tells us that the function $u(x)$ that satisfies the PDE
+$$
+\begin{equation}
+\begin{split}
+\mu(x) \cdot \nabla u(x)+\frac{1}{2}\sigma^2(x)\, \Delta u(x) = -1 \,, &\qquad \text{on }\Omega \,, \\
+u(x)=0\,,&\qquad \text{on }\partial \Omega \,,
+\end{split}
+\end{equation}
+$$
+also satisfies eq. (24) and hence is the function we want.
+
+### First Arrival Problems
+
+Suppose that we have a stochastic process $X_t$ on $\Omega \subset \mathbb{R}^n$ given by
+$$
+\begin{equation}
+dX_t= \mu(x) \cdot dt + \sigma(x)\, dB_t^n \,,
+\end{equation}
+$$
+
+and we want to ask the continuous analogue of the discrete first arrival problem. That is, suppose that $\partial \Omega$ can be split into two disjoint parts $\partial \Omega^+$ and $\partial \Omega^-$. What is the probability that $X_t$ hits  $\partial \Omega^+$  before it hits $\partial \Omega^-$ given that it starts at $X_0 = x$? Let $1_{\partial \Omega^+}$​ be the indicator function for $\partial \Omega^+$, then the function we want to compute is
+$$
+\begin{equation}
+u(x) = \mathbb{P}(X_T \in \partial \Omega^+)=\mathbb{E}[1_{\partial \Omega^+}]\,.
+\end{equation}
+$$
+
+The probabalistic interpretation we derived in the previous sections tells us that the $u(x)$ that satisfies the PDE
+$$
+\begin{equation}
+\begin{split}
+\mu(x) \cdot \nabla u(x)+\frac{1}{2}\sigma^2(x)\, \Delta u(x) = 0 \,, &\qquad \text{on }\Omega \,, \\
+u(x)=1\,,&\qquad \text{on }\partial \Omega^+ \,, \\
+u(x)=0\,,&\qquad \text{on }\partial \Omega^- \,, \\
+\end{split}
+\end{equation}
+$$
+also satisfies eq. (27) and hence is the function we want.
+
+## Parabolic Differential Equations
+
+To move to parabolic differential equations, i.e., time evolution problems, we need a version of Ito's formula for functions for functions $u(x,t)$ that depend both on space and time. Turns out, adding a time variable doesn't change anything except for adding an extra term in the time partial derivative in $u(x,t)$. Let's redo the Taylor expansion of $u(X_t,t)$ in terms of $dX_t$ and $dt$,
+$$
+\begin{equation}
+du(X_t​,t) = \frac{\partial u}{\partial t} \, dt + \frac{\partial u}{\partial x} \, dX_t + \frac{\partial^2 u}{\partial x^2} \, (dX_t)^2 \,.
+\end{equation}
+$$
+
+Redoing the calculation that we did earlier, this gives us
+$$
+\begin{equation}
+du(X_t​,t) = \left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(X_t, t) \, dt + \sigma(X_t) \frac{\partial u}{\partial x} \, dB_t\,.
+\end{equation}
+$$
+
+Note that the only thing that has changed is that there is now a time partial derivative in the $dt$ terms. Once again, we integrate this from $t = 0$ to $t = T$ to obtain
+$$
+\begin{equation}
+u(X_T​,T) =  u(X_0, 0) + \int_0^T \left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(X_t, t) \, dt + \int_0^T \sigma(X_t) \frac{\partial u}{\partial x} \, dB_t \,.
+\end{equation}
+$$
+
+Since $dB_t$​ is mean zero and independent of everything that happens up until time $t$, the second integral vanishes under expectation and we are left with
+$$
+\begin{equation}
+u(x, 0) = \mathbb{E}\left[u(X_T​,T) - \int_0^T \left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(X_t, t) \, dt \mid X_0 = x \right] \,.
+\end{equation}
+$$
+Note that this is equivalent to the following more general expression (just shift the result in time):
+$$
+\begin{equation}
+u(x, s) = \mathbb{E}\left[u(X_T​,T) - \int_s^T \left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(X_t, t) \, dt \mid X_s = x \right] \,.
+\end{equation}
+$$
+
+Once again, it is also possible for $T$ to be a stopping time $T$ (i.e., the hitting time of the boundary $\partial \Omega$ of a set, for example), deriving this is beyond the scope of this tutorial, if one assumes some nice properties about the stopping time $T$ (i.e., finite expectation).
+
+In particular, if $u$ satisfies the parabolic second-order differential equation
+$$
+\begin{equation}
+\begin{split}
+\left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(x, t) &= -f(x, t)\,, \qquad \text{for } 0 \leq t \leq T \\
+u(x, T) &= g(x) \,,
+\end{split}
+\end{equation}
+$$
+
+then we get an analogue to eq. (19) for parabolic PDEs,
+$$
+\begin{equation}
+u(x, s) = \mathbb{E}\left[g(X_T) + \int_s^T f(X_t, t) \, dt \mid X_s = x \right] \,.
+\end{equation}
+$$
+
+This is a simplified version of the more general [Feynman-Kac formula](https://en.wikipedia.org/wiki/Feynman%E2%80%93Kac_formula). Note that this is fundamentally a **Kolmogorov backwards equation** for the value function $u$. The interpretation is that we let the stochastic process $X_t$ run from time $t = s$ to $t = T$ and along the way it picks up reward at a rate of $f(X_t, t)$ per unit time, until it recieves a final payout of $g(X_T)$ at time $t = T$. The value function $u(x, s)$ measures the expected payout of this game. 
+
+### The Maximum Principle for Parabolic Equations
+
+A cool corollary of the above probabilistic expression is the maximum principle for parabolic equations. Suppose that $u(x,t)$ is defined on $\mathbb{R}^n\times[0,T]$ and satisfies
+$$
+\begin{equation}
+\left(\frac{\partial}{\partial t} + \mathcal{L}\right) u \leq 0 \,,
+\end{equation}
+$$
+for the infinitesimal generator $\mathcal{L}$ of some stochastic process $X_t$​. Then it follows that
+$$
+\begin{equation}
+\begin{split}
+u(x, s) &= \mathbb{E}\left[u(X_T​,T) - \int_s^T \left(\frac{\partial}{\partial t} + \mathcal{L}\right) u(X_t, t) \, dt \mid X_s = x \right] \\
+&\leq \mathbb{E}\left[u(X_T​,T)\right] \leq \sup_y u(y, T) \,.
+\end{split}
+\end{equation}
+$$
+
+## Duality 
+
+It is at this point that it is worth taking a digression for another discussion of the concept of duality. Unfortunately, unlike in the discrete case, daulity is far more complicated in the continuous case because our underlying vector spaces are infinite dimensional. However, I will try to have a limited discussion of it here.
+
+To begin, we need to consider our primal space. This will be the space of value functions analogous to the set of functions on vertices that we saw in the previous tutorial. However, in our case, I will take our primal set of functions to be the set of compactly supported infinitely differentiable functions $\mathcal{C}_0^\infty(\mathbb{R}^n)$. Note that any function can be well-approximated by an infinitely differentiable function (see [mollifiers](https://en.wikipedia.org/wiki/Mollifier)), so this restriction is not too much of a loss. Thus, we will denote $f, g \in \mathcal{C}_0^\infty(\mathbb{R}^n)$ as such functions. 
+
+Now, the dual $\mathcal{C}_0^\infty(\mathbb{R}^n)^*$ of $\mathcal{C}_0^\infty(\mathbb{R}^n)$ is defined as the set of all linear functionals $\pi$ on $\mathcal{C}_0^\infty(\mathbb{R}^n)$, i.e., satisfying
+$$
+\begin{equation}
+\pi[\alpha f + \beta g] = \alpha \pi[f] + \beta \pi[g] \,, \qquad \text{for } f, g \in \mathcal{C}^\infty(\mathbb{R}) \,.
+\end{equation}
+$$
+
+Note that for Banach spaces $V$ (i.e., normed infinite vector spaces), the dual space usually has the additional restriction that the functionals must be continuous,
+$$
+\begin{equation}
+\pi[f] \leq C \|f\|_V \,, \qquad \text{for all } f \in V \,.
+\end{equation}
+$$
+Since these two notions of duality are different (the second is stronger than the first), the reader should be aware of it, but it won't be important for our purposes.
+
+Note that there is not a one-to-one correspondance between the primal set $\mathcal{C}_0^\infty(\mathbb{R}^n)$ and $\mathcal{C}_0^\infty(\mathbb{R}^n)^*$, since the [Dirac delta](https://en.wikipedia.org/wiki/Dirac_delta_function) distribution $\delta_0$ is a member of the dual,
+$$
+\begin{equation}
+\delta_0[f] = f(0) \,.
+\end{equation}
+$$
+
+However, there is no such function $\delta_0$ like this in $\mathcal{C}^\infty$ with the property that
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \delta_0(x) f(x) = \delta_0[f] = f(0) \,,
+\end{equation}
+$$
+Therefore, $\mathcal{C}_0^\infty(\mathbb{R}^n)$ and $\mathcal{C}_0^\infty(\mathbb{R}^n)^*$ are fundamentally different. Nonetheless, we can still nominally think of distributions as "row vectors" and functions as "column vectors", even if this relationship is strained somewhat in the continuous case. While is may not be possible to transform a distribution into a function, it is always possible to transform a function $f$ into a distribution $\pi_f$ via the inner product
+$$
+\begin{equation}
+\pi_f[g] = \int_{\mathbb{R}^n} f(x) g(x) \, dx \,.
+\end{equation}
+$$
+But the converse is not necessarily true.
+
+In particular, all probability distributions $\pi$ on $\mathbb{R}^n$ can be interpreted as linear functionals on $\mathcal{C}_0^\infty(\mathbb{R}^n)$ via the expectation operator
+$$
+\begin{equation}
+\pi[f] \equiv \mathbb{E}_{X \sim \pi} [ f(X) ] \,.
+\end{equation}
+$$
+
+This now returns us to a very fundamental problem with stochastic processes. We have a stochastic process $X_t$ that begins with probability distribution $\pi_0$ at time $t = 0$ and we would like to evaluate $\mathbb{E}[V_T(X_T)]$ at time $T$. As we saw in the previous tutorial about discrete processes, there are two ways of doing this, we can either evolve $\pi_0$ forward in time to a distribution $\pi_T$ and then take expectation with $\mathbb{E}_{X \sim \pi_T}[V_T(X)]$, or we can evolve $V_T$ backward in time to a function $V_0$ and take expectation $\mathbb{E}_{X \sim \pi_0} [V_0(X)]$. Eq. (35) from the previous section already tells us exactly how we can do the latter backwards approach. So, let us start with the backwards equation first.
+
+### The Backward Kolmogorov Equation
+
+To derive an expression for $V_0$, first we use the law of iterated expectation,
+$$
+\begin{equation}
+\mathbb{E}[ V_T(X_T) ] = \mathbb{E}_{X \sim \pi_0}\left[\mathbb{E}\left[V_T(X_T) \mid X_0 = X\right]\right] \,.
+\end{equation}
+$$
+Thus, we see that $V_0$ has the form
+$$
+\begin{equation}
+V_0(x) = \mathbb{E}\left[V_T(X_T) \mid X_0 = x\right] \,,
+\end{equation}
+$$
+and we know from eq. (35) that $V$ therefore satisfies the PDE
+$$
+\begin{equation}
+\frac{\partial V}{\partial t} = -\mathcal{L} V(x, t) \,.
+\end{equation}
+$$
+with the appropriate boundary conditions at $t = T$. If we do a variable substitution $s = T - t$, then we get
+$$
+\begin{equation}
+\frac{\partial V}{\partial s} = \mathcal{L} V(x, s) \,,
+\end{equation}
+$$
+with boundary conditions at $s = 0$. Because of the similarity of this expression to the ordinary differential equation 
+$$
+\begin{equation}
+\frac{dy}{ds} = a y \,,
+\end{equation}
+$$
+for the exponential function $y(s) = e^{a s}$, we write the operator that takes $V_T$ at time $t = T$ to $V_{T - s}$ at $t = T - s$ as
+$$
+\begin{equation}
+V_{T - s} = \exp(s \mathcal{L}) V_T \,.
+\end{equation}
+$$
+While there are some caveats, generally, one can treat the exponential of operators in much the same way as one treats the exponential of matrices. This expression therefore tells us how value functions evolve backwards in time under the dynamics of the stochastic process $X_t$. To write out the equation in its full glory, we have
+$$
+\begin{equation}
+\frac{\partial V}{\partial s} = \mu(x) \cdot \nabla V(x,s) + \frac{1}{2} \sigma^2(x) \, \Delta V(x, s) \,. 
+\end{equation}
+$$
+
+### The Forward Kolmogorov Equation
+
+Now, we would like to turn to how the distribution $\pi_0$ evolves from $\pi_0$ to $\pi_T$. Note that the previous section gave us the following expression
+$$
+\begin{equation}
+\mathbb{E}[V_T(X_T)] = \pi_0 [\exp(s \mathcal{L}) V_T] \,.
+\end{equation}
+$$
+
+The distribution $\pi_T$ of $X_T$ is therefore given by
+$$
+\begin{equation}
+\pi_T[f] = \pi_0 [\exp(s \mathcal{L}) f] \,.
+\end{equation}
+$$
+
+However, this is somewhat of a cop-out answer to the question of how distributions evolve forward in time. Ideally, we would like an actual equation that discribes the evolution of $\pi$. To do this, we have to assume that $\pi_t$ is a nice function. We will assume therefore, that it is a member of $\mathcal{C}^\infty(\mathbb{R}^n \times [0, T])$ (note, not necessarily compactly supported). That is, there exists a function $\pi_0$ such that
+$$
+\begin{equation}
+\pi_t[f] = \int_{\mathbb{R}^n} f(x) \pi(x, t) \, dx \,,
+\end{equation}
+$$
+
+where the function $\pi(x, t)$ is the probability distribution function (PDF) of the operator $\pi_t[\cdot]$. We would like to know how the probability distribution function $\pi(x, t)$ evolves over time. To do this, we derive the weak form of the evolution equations. 
+
+First, consider test functions $\phi(x, t)$ that vanish at the end times $\phi(x, 0) = \phi(x, T) = 0$ and are compactly supported in $x$. Let us plug in the eq. (32) that we derived earlier,
+$$
+\begin{equation}
+\phi(x, 0) = \mathbb{E}\left[\phi(X_T, T) - \int_0^T \left(\frac{\partial }{\partial t} + \mathcal{L}\right) \phi(X_t, t) \, dt \right] \,.
+\end{equation}
+$$
+
+But since, $\phi(x, 0) = \phi(X_T, T) = 0$ by construction, we have that
+$$
+\begin{equation}
+\mathbb{E}\left[\int_0^T \left(\frac{\partial }{\partial t} + \mathcal{L}\right) \phi(X_t, t) \, dt \right] = 0\,.
+\end{equation}
+$$
+Now, we write this as an integral against $\pi$,
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \left[\int_0^T \left(\frac{\partial }{\partial t} + \mathcal{L}\right) \phi(X_t, t) \, dt \right] \pi(x, t) \, dx = 0\,.
+\end{equation}
+$$
+
+Taking the $\pi$ inside gives us
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \int_0^T \pi(x, t) \left(\frac{\partial }{\partial t} + \mathcal{L}\right) \phi(X_t, t) \, dt \, dx = 0\,.
+\end{equation}
+$$
+
+We now perform an integration by parts in both $x$ and $t$ to obtain
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \int_0^T \phi(X_t, t) \left(-\frac{\partial }{\partial t} + \mathcal{L}^* \right) \pi(x, t)\, dt \, dx = 0\,.
+\end{equation}
+$$
+where $\mathcal{L}^*$ is the adjoint operator of $\mathcal{L}$ (think of it like the matrix transpose). Note that the boundary terms of the integration by parts vanish because $\phi$ is compactly supported and zero at $t = 0$ and $t = T$. We will not do the computation here, but the adjoint operator written out in full is
+$$
+\begin{equation}
+\mathcal{L}^*\pi=-\nabla \cdot (\mu(x) \pi(x,t)) + \frac{1}{2}\Delta (\sigma^2(x) \pi(x,t))\,. 
+\end{equation}
+$$
+But note that since the equation (56) is true for any choice of $\phi$, it must be the case that 
+$$
+\begin{equation}
+\left(-\frac{\partial }{\partial t} + \mathcal{L}^* \right) \pi(x, t) = 0\,,
+\end{equation}
+$$
+or rather
+$$
+\begin{equation}
+\frac{\partial \pi}{\partial t} = \mathcal{L}^* \pi(x, t) \,.
+\end{equation}
+$$
+This is the Kolmogorov forward equation for $\pi$, as it governs $\pi$'s evolution forward in time. Writing it out in full glory gives
+$$
+\begin{equation}
+\frac{\partial \pi}{\partial t} = -\nabla \cdot (\mu(x) \pi(x,t)) + \frac{1}{2}\Delta (\sigma^2(x) \pi(x,t)) \,.
+\end{equation}
+$$
+
+It is also sometimes written in the form
+$$
+\begin{equation}
+\frac{\partial \pi}{\partial t} = -\nabla \cdot (\mu(x) \pi(x,t)) + \nabla \cdot(a(x) \nabla \pi(x,t)) \,,
+\end{equation}
+$$
+and in this form, it is called the **advection-diffusion equation** and $a(x)$ is called the **coefficient of diffusivity**.
+
+One special case is the heat equation
+$$
+\begin{equation}
+\frac{\partial \pi}{\partial t} = \frac{1}{2} \Delta \pi \,,
+\end{equation}
+$$
+which describes the time evolution of the probability distribution of a standard Brownian motion $B_t^n$​ on $\mathbb{R}^n$. This fact is the reason why the heat equation (and moreover, any forward Kolmogorov equation) preserves the energy functional given by
+$$
+\begin{equation}
+\mathcal{E}_t = \int_{\mathbb{R}^n} \pi(x, t) \, dx \,,
+\end{equation}
+$$
+as since $\pi(x,t)$ is a probability distribution for fixed $t$, $\mathcal{E}_t(\pi)$ must always evaluate to one.
+
+### Duality of the Evolution Operators
+
+I will make a final remark that this result gives us the expression for the operator that evolves $\pi$ forward in time, namely, it is
+$$
+\begin{equation}
+\pi_t = \exp(t \mathcal{L}^*) \pi_0 \,.
+\end{equation}
+$$
+
+Furthermore, this implies the following
+$$
+\begin{equation}
+\pi_0[\exp(T \mathcal{L}) f] = \pi_t[f] = (\exp(T \mathcal{L}^*) \pi_0)[f] \,.
+\end{equation}
+$$
+This means that the adjoint of the evolution operator $\exp(T \mathcal{L})$ for value functions $f$ is actually the evolution operator $\exp(T \mathcal{L}^*)$ for probability distributions:
+$$
+\begin{equation}
+\exp(T \mathcal{L})^* = \exp(T \mathcal{L}^*) \,.
+\end{equation}
+$$
+
+## Stationary Distribution Problems
+
+Like in the discrete case, the distribution $\pi_t$ of a stochastic process $X_t$​ with nonzero diffusion (i.e., $\sigma>0$) usually approaches a stationary distribution $\pi$ as $t \rightarrow \infty$. To compute what this stationary distribution is, we take a look at the evolution equation for $\pi_t$​, i.e.,
+$$
+\begin{equation}
+\frac{\partial \pi}{\partial t} = \mathcal{L}^* \pi(x, t) \,.
+\end{equation}
+$$
+For the change in $\pi$ to be zero, therefore, we must have that the stationary distribution satisfies the elliptic equation
+$$
+\begin{equation}
+\mathcal{L}^* \pi = 0\,.
+\end{equation}
+$$
+Written out in full,
+$$
+\begin{equation}
+-\nabla \cdot (\mu(x) \pi(x,t)) + \nabla \cdot(a(x) \nabla \pi(x,t)) = 0 \,.
+\end{equation}
+$$
+Naturally, one must also enforce the constraint that
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \pi(x) \, dx = 1 \,,
+\end{equation}
+$$
+to ensure the result is actually a probability distribution.
+
+## Markov Chain Monte Carlo with Langevin Dynamics
+
+Langevin dynamics is an important tool in computational science for sampling from distributions on $\mathbb{R}^n$. Imagine that we are given a probability distribution $p(x)$ such that we can evaluate the gradient of its logarithm $\nabla \log ⁡p(x)$. $p(x)$ may be the posterior of a statistical model after it has been trained on data, for example. Often times, in these statistics settings, evaluating $p(x)$ is hard (due to normalization factors), but $\nabla \log ⁡p(x)$ can be evaluated easily. Another common situation where one wants to sample from a distribution is in statistical physics, where the equilibrium distributions of systems is often times known and one is interested in computing properties of the system.
+
+Sometimes we might want to evaluate the mode of $p(x)$ (i.e., compute a maximum likelihood estimator). This is often used by using gradient descent, whose continuous time analogue can be written as
+$$
+\begin{equation}
+dX_t = \nabla \log p(x) \,dt\,. 
+\end{equation}
+$$
+
+If $X_t$​ is allowed to run long enough, eventually $X_t$​ will converge to a local mode of the distribution $p(x)$. However, often times the mode of a distribution is not a good representation of the distribution as a whole, and we would rather have the ability to sample from it. To see how this can be done, consider the above equation, but with a bit of noise added from Brownian motion,
+$$
+\begin{equation}
+dX_t = \nabla \log p(x) \, dt +\sqrt{2} \, dB_t \,.
+\end{equation}
+$$
+
+This process is referred to as **overdamped Langevin dynamics**. Let's compute the stationary distribution of this process using the machinery from the previous section. The stationary distribution $\pi$ should satisfy
+$$
+\begin{equation}
+-\nabla \cdot (\pi(x) \nabla \log p(x)) + \Delta \pi(x) = 0 \,.
+\end{equation}
+$$
+
+We can rearrange this to get
+$$
+\begin{equation}
+\nabla \cdot (\nabla \pi(x) - \pi(x) \nabla \log p(x)) = 0 \,.
+\end{equation}
+$$
+
+Therefore,
+$$
+\begin{equation}
+\nabla \pi (x) − \pi(x) \, \nabla \log p(x) = \varphi \,,
+\end{equation}
+$$
+where $\varphi$ is a divergence free vector field (i.e., $\nabla\cdot\varphi = 0$). However, note that since $\pi$ is a probability distribution, it must vanish as $x\rightarrow \infty$. There is no everywhere differentiable divergence free vector field which vanishes as $x \rightarrow \infty$. Therefore $\varphi = 0$ and
+$$
+\begin{equation}
+\nabla \pi(x) - \pi (x) \nabla \log p(x) = 0\,.
+\end{equation}
+$$
+
+Note that there is always a nonzero probability density that $X_t$​ ends up at any given location $x$, so therefore, $\pi(x)>0$ and we can divided by $\pi(x)$ to get
+$$
+\begin{equation}
+\frac{\nabla \pi(x)}{\pi(x)} = \nabla \log p(x) \,.
+\end{equation}
+$$
+
+But the left hand side is just
+$$
+\begin{equation}
+\nabla \log \pi(x) = \nabla \log p(x) \,.
+\end{equation}
+$$
+
+which means
+$$
+\begin{equation}
+\log \pi(x) = \log p(x) + C \,.
+\end{equation}
+$$
+
+Or rather,
+$$
+\begin{equation}
+\pi(x) = A p(x) \,,
+\end{equation}
+$$
+for some constant $A$. But integrating both sides gives
+$$
+\begin{equation}
+\int_{\mathbb{R}^n} \pi(x) \, dx = A\int_{\mathbb{R}^n} p(x) \, dx \,.
+\end{equation}
+$$
+And since both $\pi(x)$ and $p(x)$ are probability distributions, their integrals evaluate to one and we therefore have $A=1$ and
+$$
+\begin{equation}
+\pi(x) = p(x)
+\end{equation}
+$$
+Therefore, the stationary distribution of $X_t$​ is precisely the distribution $p(x)$. This means we can draw a sample from $p(x)$ by sampling $X_0$ from some arbitrary distribution (preferably one already close to $p(x)$ if we can) and letting $X_t$ run for a long time. After this burn in period, we examine $X_t$ and the result is an approximate sample from $p(x)$. This is an example of a Markov Chain Monte Carlo technique. This technique forms the basis for [stable diffusion](https://en.wikipedia.org/wiki/Stable_Diffusion) models in Machine Learning.
