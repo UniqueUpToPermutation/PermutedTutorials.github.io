@@ -1,0 +1,189 @@
+# Introduction to Modern Algebra
+
+Algebra is all about the study of sets imbued with additional operator structure. Generally, one can view all different fields of algebra as revolving around the following process:
+
+1. We posit the existence of some underlying set $V$ for our algebra.
+2. We introduce an algebraic operation to $V$, for example, a binary multiplication operator $\cdot : V \times V \rightarrow V$.
+3. We then pose additional restrictions on the operator $\cdot$, for example, $\cdot$ might be associative, commutative, etc. 
+4. We then use these axioms to study the unified behavior of this class of objects.
+
+Of course, the more restrictions we pose on what $\cdot$, the interesting the resulting algebra $V$ will be. The crux to algebra is the delicate balance between defining a class of axioms that are general enough to capture a large swath of mathematical objects one might care about, but strict enough to enable the mathematician to prove things about the structure of the object $V$. It can be easy to fall onto the former pitfall. For example, consider one of the simplest algebraic structures there is --- the **magma**. 
+
+---
+**Definition:** A *magma* $V$ is a set with the following additional structure:
+* A binary *multiplication* operator $\cdot : V \times V \rightarrow V$. 
+---
+
+A very broad class of objects, indeed, but from the perspective of identifying interesting structure and common patterns, quite useless. There is very little you can tell me about a magma without knowing more about the object's structure. 
+
+Now, luckily, we have a good two hundred years of development of the subject of modern algebra. A lot of cool math dudes have already figured out a zoo of object classes that actually do have interesting structure. Probably one of the most studied is the *group*. 
+
+## Groups
+
+The definition of a group is slightly longer than the definition of a magma.
+
+---
+**Definition:** A *group* $(G, \cdot)$ is a set with the following additional structure:
+* A binary operator $\cdot : V \times V \rightarrow V$ satisfying:
+    * *Associativity*: for $a, b \in G$, one has $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+    * *Identity Element*: there exists an element $1 \in G$ such that for every $a \in G$, $1 \cdot a = a \cdot 1 = a$.
+    * *Inverses*: every element $a \in G$ has an inverse $a^{-1} \in G$ such that $a \cdot a^{-1} = a^{-1} \cdot a = 1$. 
+---
+
+The most common example of a group I can give you is the nonzero real numbers $\mathbb{R} \setminus \{0\}$ under multiplication (here $\mathbb{R} \setminus \{0\}$ denotes $\mathbb{R}$ with $0$ removed). Additionally, the real numbers $\mathbb{R}$ are also a group under addition. But there are definitely some sets that are also not groups: the nonzero integers $\mathbb{Z} \setminus \{0\}$ under multiplication fail to be a group because inverses do not exist in the set $\mathbb{Z}$. However, if we go with addition instead of multiplication as our operation, then $\mathbb{Z}$ is indeed a group. Note however, that in both of these examples, the binary operator (addition or multiplication over the reals) is commutative, that means that for all $a, b \in G$,
+$$
+a \cdot b = b \cdot a \,.
+$$
+Groups with this property are called **abelian**. And although the examples I've given so far are abelian, but there are definately also many groups that are non-abelian, so don't go around assuming that all groups are abelian unless it's part of your assumptions! That's a classic beginner mistake. 
+
+---
+
+**Definition:** A group $G$ is called *abelian* if its operation is commutative. When this is the case, one often uses $+$ to denote the operation, to communicate that it is commutative.
+
+---
+
+Groups, by definition, involve only a single binary operation; however, it is possible to define algebras with more than one operation. Just like with one operation, there are a zoo of different algebras one can study, but the important one for linear algebra is the *field*.
+
+## Fields
+
+A field is like a generalization of our conception of the real numbers $\mathbb{R}$. A field has two fundamental operations, an addition operation, and a multiplication operation, and both are commutative. This means that we can treat elements in fields more or less like the real numbers when we're manipulating them. Division and subtraction are well-defined in fields as the corresponding inverses of multiplication and addition, so a lot of our intuition maps directly from real numbers onto fields. The formal definition reads:
+
+---
+
+**Definition:** A *field* $(F, +, \cdot)$ is a set with the following additional structure:
+
+* $(F, +)$ is an abelian group with the identity $0$.
+* $(F \setminus \{0\}, \cdot)$ is an abelian group with the identity $1$.
+* The operations $+$ and $\cdot$ satisfy the *distributive* property: for any $a, b, c \in F$,
+$$
+a \cdot (b + c) = (a \cdot b) + (a \cdot c) \,.
+$$
+---
+
+Of course, there are more complicated fields out there, for example, the complex numbers $\mathbb{C}$ are also a field, for any prime number $p$, the integers modulo $p$ ($\mathbb{Z}_p$) is also a field. The results of linear algebra generally apply to all of these fields. 
+
+Now, while fields are an incredibly rich subject and definitely worthy of further study, this tutorial is primarily about linear algebra. While linear algebra can often involves groups (matrix groups) and fields and group theory sometimes involve linear algebra (representation theory), linear algebra generally revolves around a different fundamental algebraic structure called the **vector space**.
+
+## Vector Spaces
+
+Any discussion about linear algebra necessitates talking about vector spaces. The definition of vector spaces is more involved than groups because instead of supporting just *one* binary operation, linear algebra involves *two* fundamental binary operations. Consider a set $V$ of *vectors*, 
+
+1. We want to allow the **addition** of vectors. This means for two vectors $\bm{v}$, $\bm{w}$, we require a notion of what $\bm{v} + \bm{w}$ is.
+2. We allow the **scaling** of vectors. If $\alpha$ is a *length* (i.e., a scalar) and $\bm{v}$ is a vector, we require a notion of what it means to scale $\bm{v}$ by the length $\alpha$. 
+
+Therefore, we not only need a set of *vectors*, we also need to define a set of *scalars*. And we need to define the corresponding operations. This definition is therefore more involved than that of a group,
+
+---
+
+**Definition:** A *vector space* $V$ over a *scalar field* $F$ (sometimes written $V / F$) is a set with the following additional structure:
+* $(V, +)$ is an abelian group under a *vector addition* operator $+ : V \times V \rightarrow V$.
+* $(F, +, \cdot)$ is a field.
+* A *scalar multiplication* operator $\cdot : F \times V \rightarrow V$.
+* Vector addition and scalar multiplication must satisfy the *distributive* property:
+$$
+    \alpha \cdot (\bm{v} + \bm{w}) = \alpha \cdot \bm{v} + \alpha \cdot \bm{w} \,,
+$$
+where $\alpha \in R$ and $\bm{v}, \bm{w} \in V$. 
+* Scalar multiplication must be compatible with the multiplication operation in $F$:
+$$
+    (\alpha \cdot \beta) \cdot \bm{v} = \alpha \cdot (\beta \cdot \bm{v}) \,, 
+$$
+where $\alpha, \beta \in F$ and $\bm{v} \in V$. This means it shouldn't matter whether we scale a vector $\bm{v}$ by a length $\beta$ and then by $\alpha$, or just scale $\bm{v}$ once by length $\alpha \cdot \beta$. 
+
+---
+
+Now, I hear you ask, "what is the need for all this abstraction? Can't we just think about vectors as arrays of real numbers?" And the answer is: kinda. Of course, it turns out that we can always run computations by writing out vectors using arrays of scalars, it isn't always clear how exactly to convert an abstract vector into an array -- as there can be infinitely many ways to view the same vector. The abstract formalism here allows us to study linear algebra without having to delve into how the vectors are represented, and it can be a very powerful advantage to think about vectors without having to have the baggage of arrays and matrices. Then again, at the end of the day, we eventually will want to run computations, which is when matrices and arrays will become necessary. But before that, we can spend some time thinking about vectors in the abstract. Let's first look at some examples of vector spaces
+
+### The Canonical Real Vector Space $\mathbb{R}^n$
+
+The first example of a vector space is the set of arrays of real numbers of length $n$,
+$$
+\mathbb{R}^n = \{ (\alpha_1, ..., \alpha_n) \mid \alpha_i \in \mathbb{R} \} \,.
+$$
+
+This is one you've likely studied extensively in a previous linear algebra class. The underlying field is simply the real numbers $\mathbb{R}$. Scalar multiplication is defined as one might expect,
+$$
+\beta \cdot (\alpha_1, ..., \alpha_n) = (\beta \alpha_1, ..., \beta \alpha_n) \,.
+$$
+There is generally nothing surprising here. Let's get a little more exotic.
+
+### The Complex Numbers $\mathbb{C}$ over $\mathbb{R}$
+
+Note that one can view the complex numbers as vectors over the set of real scalars. This is kinda weird at first, but scalar multiplication is easily defined:
+$$
+\alpha \cdot (\beta + \gamma i) = \alpha \beta + \alpha \gamma i \,.
+$$
+Note that this vector space is basically equivalent to $\mathbb{R}^2$ over $\mathbb{R}$ since we can identify $1$ with $(1, 0)$ and $i$ with $(0, 1)$ and perform calculations the same way in both spaces.
+
+### Real Polynomials $\mathbb{R}[x]$ over $\mathbb{R}$
+
+Note that the set of real polynomials in the variable $x$ is a vector space over $\mathbb{R}$, polynomials can be added together to give other polynomials. Moreover, polynomials can be multiplied by scalars,
+$$
+\beta \cdot \sum_{n = 0}^N \alpha_n x^n = \sum_{n = 0}^N \beta \alpha_n x^n \,.
+$$
+Note that there's not an easy equivalence between this set and any vector space of the form $\mathbb{R}^n$. That's because this is an infinite dimensional space.
+
+### Square-Integrable Functions $L^2(\mathbb{R})$ over $\mathbb{R}$
+
+The final example is the set of square integrable functions $f(x)$ over $\mathbb{R}$. These are defined as the functions such that
+$$
+\int_{\mathbb{R}} f(x)^2 \, dx < \infty \,, 
+$$
+where the integral on the left is the [Lebesgue integral](https://en.wikipedia.org/wiki/Lebesgue_integration) with respect to the [Borel measure](https://en.wikipedia.org/wiki/Borel_measure) on $\mathbb{R}$. If you don't understand what that means, that's fine, it's not particularly important right now. Again, note that there is not an equivalence to any finite dimensional vector space $\mathbb{R}^n$. 
+
+## Morphisms and Linear Functions
+
+The second part of algebra, after one has defined a class of objects to study, is to examine relationships between objects. More precisely, functions between objects. However, we're not interested in just all functions, we're specifically interested in functions that *preserve some structure of the underlying object they act on*. For example, suppose we have a function between two groups $(G, \cdot_G)$ and $(H, \cdot_H)$, denoted
+$$
+f : G \rightarrow H \,,
+$$
+we say that $f$ is a **morphism** (or **homomorphism**) if the application of $f$ is compatible with the underlying operation $\cdot_G$ of the group $G$. Formally,
+$$
+f(g_1 \cdot g_2) = f(g_1) \cdot f(g_2) \,.
+$$
+In this sense, $f$ preserves the multiplicative structure of $G$; it embeds $G$ into $H$. However, that is not to say that $f$ preserves *all* of the multiplicative structure. There are always trivial morphisms, for example,
+$$
+f(g) = 1 \,.
+$$
+This is clearly a morphism, because,
+$$
+1 = f(g_1 \cdot g_2) = f(g_1) \cdot f(g_2) = 1 \cdot 1 = 1 \,.
+$$
+But as a morphism, it is not very interesting. 
+
+Similarly, one can define morphisms for two fields $F$ and $E$. A function $f : F \rightarrow E$ is a morphism if it preserves both the additive and multiplicative structure of $F$, namely,
+$$
+\begin{split}
+f(\alpha + \beta) &= f(\alpha) + f(\beta) \,, \\
+f(\alpha \cdot \beta) &= f(\alpha) \cdot f(\beta) \,.
+\end{split}
+$$
+
+Finally, we come to morphisms for vector spaces. Morphisms for vector spaces preserve both vector addition and scalar multiplication. These morphisms are usually called **linear functions** or **linear transformations**. Let's give a full definition for this object because it is crucially important to the study of linear algebra,
+
+---
+
+**Definition:** A function $f : V \rightarrow W$ is a linear function between two vector spaces $V$ and $W$ over $F$ if it is compatible with vector addition and scalar multiplication. That is, for any $\bm{x}, \bm{y} \in V$ and $\alpha \in F$,
+$$
+\begin{split}
+f(\bm{x} + \bm{y}) &= f(\bm{x}) + f(\bm{y}) \,, \\
+f(\alpha \cdot \bm{x}) &= \alpha \cdot f(\bm{x}) \,.
+\end{split}
+
+$$
+
+---
+
+In a somewhat meta turn of events, note that the set of linear functions $L(V, W)$ between two vectors spaces $V$ and $W$ is itself a vector space. This is because for any $f, g \in L(V, W)$, we can define the sum
+$$
+(f + g)(\bm{x}) = f(\bm{x}) + g(\bm{x}) \,,
+$$
+as well as the scalar product
+$$
+(\alpha f)(\bm{x}) = \alpha f(\bm{x}) \,.
+$$
+Additive inverses are defined via
+$$
+(-f)(\bm{x}) = -f(\bm{x}) \,.
+$$
+And you can check that the trivial linear function that sends everything to $\bm{0}$ is the additive identity.  

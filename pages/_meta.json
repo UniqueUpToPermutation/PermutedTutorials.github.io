@@ -1,5 +1,6 @@
 {
   "index": "Introduction",
+  "linearalg": "Linear and Multilinear Algebra",
   "light1" : "Light Transport and Stochastic Q-Processes",
   "sdeandpde": {
     "title": "Stochastic Processes and Differential Equations"
