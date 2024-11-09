@@ -2,5 +2,6 @@
   "intro_algebra": "Introduction to Modern Algebra",
   "lin_indep_bases": "Linear Independence and Bases",
   "rank_nullity": "Rank-Nullity Theorem",
-  "multi_linear": "Tensors"
+  "multi_linear": "Tensors I",
+  "special_tensors": "Tensors II"
 }

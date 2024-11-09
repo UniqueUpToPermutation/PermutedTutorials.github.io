@@ -1,0 +1,78 @@
+# Tensors Continued
+
+This chapter is devoted to a number of special instances of tensors which tend to be super important in practice, as well as some more advanced operations on tensors. There are two special tensor structures in particular which are quite interesting and make appearances across a wide variety of fields, in particular, in quantum mechanics.
+
+## Symmetric Tensors
+
+A symmetric tensor is a tensor where one can interchange indices without changing the result of the computation,
+
+---
+**Definition**: A dual tensor $f : V^{\times k} \rightarrow F$ is symmetric if any two of its entries are interchangeable,
+$$
+f(..., \bm{v}_i, ..., \bm{v}_j, ...) = f(..., \bm{v}_j, ..., \bm{v}_i, ...) \,.
+$$
+---
+
+You can verify that the set of symmetric tensors is actually a subspace of the set of dual tensors. What about primal tensors? 
+
+---
+
+**Definition**: A primal tensor $\bm{v} \in V^{\otimes k}$ is symmetric if for any dual tensor $f: V^{\times k} \rightarrow F$ and for any $i, j$, we have
+$$
+f(\bm{v}) = f_{i \leftrightarrow j}(\bm{v}) \,.
+$$
+where $f_{i \leftrightarrow j}$ is $f$ but with the $i$-th and $j$-th inputs swapped.
+
+---
+
+Okay? What about mixed tensors?
+
+---
+
+**Definition**: A mixed tensor $f : V^{\times k} \rightarrow V^{\otimes m}$ is symmetric if it is symmetric in its inputs
+$$
+f(..., \bm{v}_i, ..., \bm{v}_j, ...) = f(..., \bm{v}_j, ..., \bm{v}_i, ...) \,,
+$$
+as well as its outputs, e.g., for any tensor $g \in V^{\times m} \rightarrow F$,
+$$
+g(f(\bm{v})) = g_{i \leftrightarrow j}(f(\bm{v})) \,.
+$$
+
+---
+
+Furthermore, there's a special type of product we can use to combine two symmetric tensors into a larger symmetric tensor,
+
+---
+
+**Definition**: The **symmetric product**  $f \odot g$ of two tensors $f$ and $g$ is given by
+$$
+f \odot g = f \otimes g + g \otimes f \,.
+$$
+You can verify that the symmetric product of symmetric tensors is also symmetric. 
+
+---
+
+### Inner Products and Bilinear Forms
+
+The most important case of a symmetric tensor is an bilinear form. A bilinear form is simply a tensor $V \times V \rightarrow F$. Note that from our discussion of array representations of tensors from the previous section, a bilinear form $f \in V^* \otimes V^*$ has a matrix representation with respect to a basis $\mathcal{B} = [\bm{b}_1...\bm{b}_m]$ for $V$,
+$$
+f(\bm{v}, \bm{w}) = \sum_{ij} M_{ij} \alpha_i \beta_j \,,
+$$
+where $\alpha_i, \beta_j$ are the coordinates of $\bm{v}, \bm{w}$ with respect to $\mathcal{B}$. In particular, if $\bm{a}$ and $\bm{b}$ are the arrays with entries $\alpha_i, \beta_j$ respectively, then
+$$
+f(\bm{v}, \bm{w}) = \bm{a}^T \bm{M} \bm{b} \,,
+$$
+where $\bm{M}$ has entries $M_{ij}$. [TO BE CONTINUED...]
+
+## Anti-Symmetric Tensors
+
+Anti-symmetric tensors are the opposite of symmetric tensors. They have embedded within them a certain notion of chirality. Interchanging two inputs to an anti-symmetric tensor flips the sign of the tensor,
+
+---
+**Definition**: A dual tensor $f : V^{\times k} \rightarrow F$ is **anti-symmetric** if when any two of its entries are interchanged the tensor flips sign,
+$$
+f(..., \bm{v}_i, ..., \bm{v}_j, ...) = -f(..., \bm{v}_j, ..., \bm{v}_i, ...) \,.
+$$
+---
+
+The definition can be extended to primal and mixed tensors in exactly the same. [TO BE CONTINUED...]
