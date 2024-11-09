@@ -1,0 +1,191 @@
+# Tensors and Multi-linear Algebra
+
+Okay. So what is a tensor? Good question. Before I answer that question, let me turn to the following question: so far we've thought about linear functions that take in one vector and spit out another. Can we think about linear functions that take in multiple vectors? Two vectors? Four vectors? What do these maps look like? Well, let's take a look:
+
+---
+
+**Definition**: A *multi-linear form* $f: V_1 \times ... \times V_k \rightarrow F$ from vector spaces $V_1, ..., V_k$ to shared scalar field $F$ is a function that is linear in all of its arguments, i.e.,
+$$
+f(..., \alpha \bm{v} + \beta \bm{w}, ...) = \alpha f(..., \bm{v}, ...) + \beta f(..., \bm{w}, ...) \,.
+$$
+
+---
+
+Now, supposing we have a basis $\mathcal{B}_1, ..., \mathcal{B}_k$ for each space $V_1, ..., V_k$, can we write down a coordinate representation for $f$ in the same way that we did for matrices? This should be relatively simple, but note that unlike with linear functions, we need to know where $f$ sends each possible pair of basis vectors $(\bm{b}_{1i_1}, ..., \bm{b}_{ki_k})$ to write down a representation, this is because
+$$
+f(\bm{v}_1, ..., \bm{v}_k) = f\left(\sum_i \alpha_{1i} \bm{b}_{1i}, ..., \sum_i \alpha_{ki} \bm{b}_{ki}\right) = \sum_{i_1, ..., i_k} \alpha_{1i_1} ... \alpha_{ki_k} f(\bm{b}_{1i_1}, ..., \bm{b}_{ki_k})\,.
+$$
+Therefore, letting $M_{i_1...i_k} = f(\bm{b}_{1i_1}, ..., \bm{b}_{ki_k})$, for an arbitrary set of inputs we have
+$$
+f(\bm{v}_1, ..., \bm{v}_k) = \sum_{i_1, ..., i_k} M_{i_1...i_k} \alpha_{i_1} ... \alpha_{i_k} \,.
+$$
+In many circles (*cough* physics *cough*), it is common to suppress summations across indices in products like these and instead write the result as just $M_{i_1...i_k} \alpha_{i_1} ... \alpha_{i_k}$. This is called **Einstein Notation**. The understanding is that if an index is repeated across multiple arrays in this product, then there is an implicit summation. These summation operations are called **tensor contractions**. Nonetheless, we observe that the representation of $f$ under the choice of bases turned out to be a multi-dimensional array $M$ with an index corresponding to the output as well as an index corresponding to each input. 
+
+Note that the set of multi-linear forms $V_1 \times ... \times V_k \rightarrow F$ is itself a vector space. Can we find a set of basis functions for this vector space? Well, this is where the notion of a tensor product comes in.
+
+---
+
+**Definition**: The *tensor product* of two *multi-linear forms* $f: V_1 \times ... \times V_k \rightarrow F$ and $g: W_1 \times ... \times W_m \rightarrow F$ is a multi-linear form $f \otimes g: V_1 \times ... \times V_k \times W_1 \times ... \times W_m \rightarrow F$ such that
+$$
+(f \otimes g)(\bm{v}_1, ..., \bm{v}_k, \bm{w}_1, ..., \bm{w}_m) = f(\bm{v}_1, ..., \bm{v}_k) g(\bm{w}_1, ..., \bm{w}_m) \,.
+$$
+
+---
+
+The reader can verify that the basis representations of $f$ and $g$ multiply to get the basis representation of $f \otimes g$,
+$$
+[f \otimes g]_{i_1 ... i_k j_1 ...j_m} = [f]_{i_1 ... i_k} [g]_{j_1 ...j_m} \,. 
+$$
+
+Now, the idea is to build a basis for the space of linear forms $V_1 \times ... \times V_k \rightarrow F$ by first building a basis for the spaces of forms $V_i \rightarrow F$ and then taking tensor products between these primitive elements. It turns out that linear forms $V_i \rightarrow F$ have a special name, they are called **dual spaces**. 
+
+## The Dual Space
+
+**Definition**: The **dual space**, $V^*$, of a finite dimensional vector space $V$ is the set of linear forms $V \rightarrow F$. 
+
+---
+
+Dual spaces are quite easy to characterize. Let us build a basis for a dual space $V^*$. Suppose that $\mathcal{B} = [\bm{b}_1...\bm{b}_n]$ is a basis for $V$, then we can define a dual basis $\mathcal{B}^* = [\bm{b}_1^*, ..., \bm{b}_n^*]$ such that
+
+$$
+\bm{b}_i^*(\bm{b}_j) = \delta_{ij} \,,
+$$
+where $\delta_{ij} = 0$ if $i\neq j$ and $1$ otherwise. Let $\bm{v} = \sum_i \alpha_i \bm{b}_i$. To see that $\mathcal{B}^*$ spans the dual space $V^*$ note that
+$$
+f(\bm{v}) = \sum_i \alpha_i f(\bm{b}_i) = \sum_i \alpha_i f(\bm{b}_i) \bm{b}_i^*(\bm{b}_i) = \sum_i f(\bm{b}_i) \bm{b}_i^*(\alpha_i \bm{b}_i) = \sum_i f(\bm{b}_i) \bm{b}_i^*(\bm{v}) \,.
+$$
+Hence,
+$$
+f = \sum_i f(\bm{b}_i) \bm{b}_i^* \,. 
+$$
+So $\mathcal{B}^*$ spans $V^*$. 
+
+But are the elements of $\mathcal{B}^*$ linearly independent? Well, suppose that
+$$
+\sum_i \alpha_i \bm{b}_i^* = 0 \,.
+$$
+Then this means that
+$$
+\sum_i \alpha_i \bm{b}_i^*(\bm{b}_j) = 0 \\
+\sum_i \alpha_i \delta_{ij} = 0 \\
+\alpha_j = 0
+$$
+Thus, linear independence! So $\mathcal{B}^*$ is indeed a basis. The immediate corollary is that there is a one-to-one correspondence (isomorphism) between $V$ and $V^*$. Given a basis $\mathcal{B}$, we can lift any vector $\bm{v}$ into a dual vector via,
+$$
+\bm{v} = \sum_i \alpha_i \bm{b}_i \mapsto \sum_i \alpha_i \bm{b}_i^* = \bm{v}^* \,.
+$$
+Note that this particular isomorphism is dependent on the choice of basis $\mathcal{B}$, another basis will give a different $\bm{v}^*$. 
+
+If we return to our basis representation of a multi-linear form $f$ from earlier, it is not difficult to verify that
+$$
+f = \sum_{i_1...i_k} M_{i_1...i_k} \bm{b}_{1i_1}^* \otimes ... \otimes \bm{b}_{ki_k}^* \,,
+$$
+(simply plug in $\bm{v}_1, ..., \bm{v}_k$ to both the former and latter expression). Therefore the set of basis vector $\bm{b}_{1i_1}^* \otimes ... \otimes \bm{b}_{ki_k}^*$ spans the set of multi-linear forms $V_1 \times ... \times V_k \rightarrow F$. 
+
+## Tensor Product of Dual Spaces
+
+With all of the above established, we are now ready to define the tensor product of two dual spaces $V^*$ and $W^*$. Let $L(V_1, ..., V_k)$ denote the vector space of multi-linear forms $V_1 \times ... \times V_k \rightarrow F$. Of course, we know that for a single vector space, this is just the dual $L(V) = V^*$. Now, we give the appropriate definition of the tensor product space $L(V_1, ..., V_k) \otimes L(W_1, ..., W_m)$. 
+
+---
+
+**Definition**: The **tensor product space** $L(V_1, ..., V_k) \otimes L(W_1, ..., W_k)$ of $L(V_1, ..., V_k)$ and $L(W_1, ..., W_k)$ is defined as $L(V_1, ..., V_k, W_1, ..., W_k)$. 
+
+---
+
+In particular, this means that we can write any multi-linear form vector space $L(V_1, ..., V_k)$ as the tensor product
+$$
+L(V_1, ..., V_k) = L(V_1) \otimes ... \otimes L(V_k) = V_1^* \otimes ... \otimes V_k^* \,.
+$$
+
+Note that this is all just definitions. There is nothing of actual substance here. The key point is that we can think of multi-linear form spaces as being the product of a bunch of smaller primitive spaces $V_i^*$. 
+
+The nice thing is that this definition allows us to start thinking about the structure of tensor algebra. If $f \in V^*$ and $g \in W^*$, then the tensor product $f \otimes g$ is a member of $V^* \otimes W^*$. However, not every member of $V^* \otimes W^*$ can be written as $f \otimes g$ for two elements $f \in V^*$ and $g \in W^*$. This point can often be confusing for newcomers. For example, suppose $\bm{b}_1, \bm{b}_2$ is a basis for $V$ and consider the following member of $V^* \otimes V^*$,
+$$
+\bm{b}_1^* \otimes \bm{b}_2^* + \bm{b}_2^* \otimes \bm{b}_1^* \,.
+$$
+There is in fact no way to write this vector as the tensor product of two items (you can try if you'd like). Note however, that the tensor product is still a linear operation, so a vector like
+$$
+\bm{b}_1^* \otimes \bm{b}_2^* + \bm{b}_1^* \otimes \bm{b}_1^* 
+$$
+can actually be written as
+$$
+\bm{b}_1^* \otimes (\bm{b}_1^* + \bm{b}_2^*) \,.
+$$
+
+## The Dual of the Dual
+
+Okay. So far we've talked about the dual $V^*$ of a vector space $V$, but what happens if you take the dual of the dual? Well, you can think of the space $(V^*)^*$ as linear forms of linear forms (functionals), but there is a simpler way. It is possible to relate $V$ and $(V^*)^*$. And this relationship goes beyond just simple isomorphism. While $V^*$ and $V$ are isomorphic, that isomorphism depends crucially on the basis $\mathcal{B}$ that we used to define the isomorphism. There are many different ways to relate the primal and dual spaces. However, every primal element $\bm{v}$ of $V$ can *unambiguously* be thought of as a functional $(V \rightarrow F) \rightarrow F$. Just define the action of $\bm{v} \in V$ on a function $f \in V^*$ as
+$$
+\bm{v}(f) \equiv f(\bm{v}) \,.
+$$
+See what I mean? The whole concept of which space is the primal and which is the dual is completely arbitrary. The important thing is that the dual of the dual is once again the primal. This is why people prefer to write $(V^*)^* = V$ as an *equivalence* rather than just an *isomorphism*. 
+
+Note, however, this is only true for vector spaces and not true for functions in general. The linear structure is very important here! In general set theory, the set of functionals $(V \rightarrow F) \rightarrow F$ is actually strictly **larger** than $V$ itself. However, every element of $V$ is still a functional in $(V \rightarrow F) \rightarrow F$. Finite dimensional linear algebra is special: the fact that the linear structure guarantees the isomorphism of the dual space to the primal space means that the dual of the dual cannot be larger than the primal space.
+
+## The Tensor Product of Vectors
+
+Once you have digested the idea above, we can finally move on and define the tensor product of vectors and not just dual vectors. Consider two vectors spaces $V$ and $W$, we define the tensor product space,
+
+---
+
+**Definition**: The **tensor product** $V \otimes W$ of two vectors spaces $V$, $W$ over $F$ is defined as
+$$
+V \otimes W \equiv (V^* \otimes W^*)^* \,.
+$$
+
+---
+
+Whaaaaaaa? Doesn't this seem like chicken and egg? Well, just bear with me for a moment. It's super abstract, I know. First, how do we define the tensor product of two vectors $\bm{v} \in V$ and $\bm{w} \in W$? 
+
+---
+
+**Definition**: The **tensor product** $\bm{v} \otimes \bm{w} \in V \otimes W$ of two vectors $\bm{v} \in V$, $\bm{w} \in W$ is defined as
+$$
+(\bm{v} \otimes \bm{w})(f) = f(\bm{v}, \bm{w}) \,.
+$$
+
+---
+
+Again, for sanity, thinking of $\bm{v} \otimes \bm{w}$ as a function on functions is missing the point. The better way of thinking of the above is that $\bm{v} \otimes \bm{w}$ is a primal tensor and $f \in (V \otimes W)^*$ is a dual tensor. They combine and give a number in $F$. If it seems like pulling a rabbit out of a hat, that because it very much has that flavor. If you recall, what we did was
+
+1. Define the dual space $V^*$.
+2. Define how to tensor product dual spaces $V^* \otimes W^*$.
+3. Take the dual of tensor product of the duals $(V^* \otimes W^*)^*$ to get the tensor product of the primal $V \otimes W$.
+
+The key notion to tensors is the algebraic structure of multi-linear forms. And as you can we, we have magically transferred this algebraic structure from the dual, where it is trivially defined, to the primal. Personally, I think this is approach is quite beautiful. 
+
+## Mixed Tensors
+
+Now that we taken tensor products of primal vectors and tensor products of dual vectors, one last question remains: can we take the tensor product of primal and a dual vector? How do we make sense of
+$V \otimes W^*$ or $V^* \otimes W$? This is the final piece of the puzzle. To do this, we have to now have to define a full multi-linear function (not just a linear form),
+
+---
+
+**Definition**: A **multi-linear function** $f$ is a linear function from $V_1 \times ... \times V_k$ to $W_1 \otimes ... \otimes W_m$ that is linear in each of its entries, i.e.,
+$$
+f(..., \alpha \bm{v} + \beta \bm{w}, ...) = \alpha f(..., \bm{v}, ...) + \beta f(..., \bm{w}, ...) \,.
+$$
+The components of $f$ corresponding to $V_1, ..., V_k$ are called *contravariant* and the components of $f$ corresponding to $W_1, ..., W_m$ are called *covariant*. The space of all such functions is denoted by $ W_1 \otimes ... \otimes W_m \otimes V_1^* \otimes ... \otimes V_k^*$. $f$ is said to be an $(m, k)$-tensor. 
+
+---
+
+This is it. This is a mixed tensor. Note that this encompasses both primal tensors in $V_1 \otimes ... \otimes V_k$ because they can be thought of as maps $F \rightarrow V_1 \times ... \times V_k$ (i.e., through scalar multiplication), as well as dual tensors $W_1^* \otimes ... \otimes W_m^*$ because they are already map $W_1 \times ... \times W_m \rightarrow F$. How are tensor products defined?
+
+---
+
+**Definition**: Let $f \in W_1 \otimes ... \otimes W_k \otimes V_1^* \otimes ... \otimes V_k^*$ and $g \in U_1 \otimes ... \otimes U_s \otimes Q_1^* \otimes ... \otimes Q_r^*$ be a multi-linear functions. The tensor product of these functions has signature
+$$
+f \otimes g : V_1 \times ... \times V_k \times Q_1 \times ... \times Q_r \rightarrow W_1 \otimes ... \otimes W_k \otimes U_1 \otimes ... \otimes U_s \,,
+$$
+and is defined as
+$$
+(f\otimes g)(\bm{v}_1, ..., \bm{v}_k, \bm{q}_1 \times \bm{q}_r) = f(\bm{v}_1, ..., \bm{v}_k) \otimes g(\bm{q}_1, ...,  \bm{q}_r) \,.
+$$
+Note, therefore that $f \otimes g$ is a member of
+$$
+W_1 \otimes ... \otimes W_k \otimes U_1 \otimes ... \otimes U_s \otimes V_1^* \otimes ... \otimes V_k^* \otimes Q_1^* \otimes ... \otimes Q_r^*
+$$
+
+---
+
+So what is the tensor product of a primal vector space $W$ and a dual vector space $V^*$? Well, it is just the set of linear functions $V \rightarrow W$!
