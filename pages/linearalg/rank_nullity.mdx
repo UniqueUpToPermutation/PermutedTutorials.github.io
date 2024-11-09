@@ -1,0 +1,110 @@
+# Rank-Nullity Theorem
+
+Recall from the previous section that two matrices $\bm{A}$ and $\bm{B}$ are *equivalent* if there exist invertible $\bm{P}$ and $\bm{M}$ such that
+$$
+\bm{B} = \bm{M} \bm{A} \bm{P}^{-1} \,.
+$$
+The objective of this chapter is to classify all matrices of a given size up to equivalence. 
+
+## Fundamental Subspaces: Kernel and Range
+
+In order to begin talking about this, we need to talk about two fundamental subspaces associated with a linear function $f: V \rightarrow W$, the *range* and the *kernel*. But first let us properly define the image and pre-image of a vector space.
+
+---
+
+**Definition**: The *image* of a vector subspace $U \subset V$ under a linear function $f : V \rightarrow W$, denoted $f(U)$, is the set of all elements of $W$ which can be written
+$$
+\bm{w} = f(\bm{u}) \,,
+$$
+for some $\bm{u} \in U$. Note the *image* of a vector space is also a vector space.
+
+**Definition**: The *preimage* of a vector subspace $U \subset W$ under a linear function $f : V \rightarrow W$, denoted $f^{-1}(U)$, is the set of all elements of $V$ which map to $U$, i.e.,
+$$
+f(\bm{v}) \in U \,.
+$$
+The preimage of a vector space is also a vector space.
+
+---
+
+With these definitions, the most important image and preimage of a function $f$ are the *range* and *kernel*,
+
+---
+
+**Definition**: The *range* of a linear function $f : V \rightarrow W$, denoted $\text{range}(f)$, is the image of $V$ under $f$.
+
+**Definition**: The *kernel* of a linear function $f : V \rightarrow W$, denoted $\text{ker}(f)$, is the preimage of the trivial subspace $\{ 0 \} \subset W$ under $f$. That is, it is the set of all elements that map to zero (i.e., "annihilated" by $f$).
+
+---
+
+Both of these are fundamental subspaces that determine the structure of $f$. In particular, their dimensions are important properties of $f$,
+
+---
+
+**Definition**: The *rank* of a linear function $f : V \rightarrow W$, denoted $\text{rank}(f)$, is the dimension of its range.
+
+**Definition**: The *nullity* of a linear function $f : V \rightarrow W$, denoted $\text{null}(f)$ is the dimension of its kernel.
+
+---
+
+The key to rank-nullity theorem is to recognize that $f$ essentially acts as a "filter" on the algebraic structure of $V$, it annihilates some parts of the structure --- the structure contained within the kernel space $\text{ker}(f)$, but preserves the remaining structure and embeds it into the range space $\text{range}(f)$. The idea of the rank-nullity theorem is that if one "glues" the structure of the kernel and the range together, we can "recover" the structure of the original domain $V$. More precisely, this means that the dimensions of $\text{ker}(f)$ and $\text{range}(f)$ should sum to the dimension original space $V$. This is the statement of rank-nullity theorem,
+
+---
+
+**Theorem** (*Rank-Nullity*): For any linear function $f: V \rightarrow W$,
+$$
+\text{rank}(f) + \text{null}(f) = \text{dim}(V) \,.
+$$
+Moreover, any matrix representation of $f$ is equivalent to 
+$$
+\left[\begin{array}{cc} \bm{I}_{\text{rank}(f)} & \\ & \bm{0}_{\text{null}(f)}\end{array}\right] \,.
+$$
+
+---
+
+Where above $\bm{I}_{\text{rank}(f)}$ is the identity of size $\text{rank}(f)$ and $\bm{0}_{\text{null}(f)}$ is the zero matrix of size $\text{null}(f)$.
+
+## Proof of Theorem
+
+The proof of this statement is not particularly difficult. It just requires finding the "right" basis for $V$. To begin, let $\bm{a}_1, ..., \bm{a}_k$ be a basis for $\text{ker}(f)$. Note that we can expand any linearly independent set $S$ with dimension less than $\text{dim}(V)$ to a linearly independent set with one more element by simply selecting an element from $V \setminus \text{span}(S)$ to add to it (you can verify for yourself that the resulting set is still linearly independent). This allows us to expand the basis $\bm{a}_1, ..., \bm{a}_k$ for $\text{ker}(f)$ to a basis $\bm{a}_1, ..., \bm{a}_k, \bm{b}_1, ..., \bm{b}_m$ for all of $V$. The core part of the proof is now to show that $f(\bm{b}_1), ..., f(\bm{b}_m)$ are a basis for $\text{range}(f)$. If this is the case, then the first part of the theorem follows automatically since then $k = \text{null}(f)$, $m = \text{rank}(f)$, and $m + k = \text{dim}(V)$. 
+
+First, we note that $f(\bm{b}_1), ..., f(\bm{b}_m)$ must span the range of $f$. This is because anything in the range of $f$ can be written as
+$$
+\bm{w} = f \left( \sum_i \alpha_i \bm{a}_i + \sum_i \beta_i \bm{b}_i\right) = \sum_i \alpha_i f (\bm{a}_i) + \sum_i \beta_i f(\bm{b}_i) = \sum_i \beta_i f(\bm{b}_i) \,,
+$$
+where we have used the fact that $f(\bm{a}_i) = \bm{0}$ by definition of the kernel. Now, in order to show that $f(\bm{b}_1), ..., f(\bm{b}_m)$ is a basis, we need linear independence. To show this, suppose for contradiction that there exist nontrivial $\beta_i$ such that
+$$
+\sum_i \beta_i f(\bm{b}_i) = \bm{0} \,.
+$$
+Then, by linearity,
+$$
+f\left( \sum_i \beta_i \bm{b}_i \right) = \bm{0} \,.
+$$
+But this means that $\sum_i \beta_i \bm{b}_i$ must be a member of the kernel of $f$, thus, there must exist $\alpha_i$ such that
+$$
+\sum_i \beta_i \bm{b}_i = \sum_i \alpha_i \bm{a}_i \,.
+$$
+But this contradicts the assumption that the full basis $\bm{a}_1, ..., \bm{a}_k, \bm{b}_1, ..., \bm{b}_m$ is linearly independent since we have just found a nonzero set of coordinates that gives the zero vector,
+$$
+\sum_i \alpha_i \bm{a}_i - \sum_i \beta_i \bm{b}_i = \bm{0} \,.
+$$
+Thus, $f(\bm{b}_1), ..., f(\bm{b}_m)$ must be a basis for the range of $f$. 
+
+Now that we have this basis, we can easily prove the second part of the theorem as well. Let $\bm{c}_i = f(\bm{b}_i)$. Expand $[\bm{c}_1, ..., \bm{c}_m]$ to a basis $[\bm{c}_1, .., \bm{c}_m]$ for all of $W$. Then we have that
+$$
+\bm{c}_i \cdot 1 = f(\bm{b}_i) \,,\\
+ \bm{d}_i \cdot 0 = f(\bm{a}_i) \,.
+$$
+Let $\bm{v}$ be an arbitrary array in $F^{m + k}$. We multiply each equation by the corresponding entry of $\bm{v}$,
+$$
+\bm{c}_i \cdot 1 \cdot v_i = f(v_i \bm{b}_i) \,,\\
+ \bm{d}_i \cdot 0 \cdot v_{m + i} = f(v_{m + i} \bm{a}_i) \,.
+$$
+Summing all these equalities and letting $\mathcal{B}_V = [\bm{b}_1, ..., \bm{b}_m, \bm{a}_1, ..., \bm{a}_k]$ and $\mathcal{B}_W = [\bm{c}_1, ..., \bm{c}_m, \bm{d}_1, ..., \bm{d}_m]$, we rewrite the above in matrix form,
+$$
+\mathcal{B}_W \left[\begin{array}{cc} \bm{I}_{\text{rank}(f)} & \\ & \bm{0}_{\text{null}(f)}\end{array}\right] \bm{v} = f(\mathcal{B}_V \bm{v}) \,.
+$$
+Hence,
+$$
+[f]_{\mathcal{B}_W, \mathcal{B}_V} = \left[\begin{array}{cc} \bm{I}_{\text{rank}(f)} & \\ & \bm{0}_{\text{null}(f)}\end{array}\right] \,.
+$$
+From the discussion of matrix equivalence in the previous section, we therefore have the second part of the theorem. 

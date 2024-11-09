@@ -1,3 +1,5 @@
 {
-  "intro_algebra": "Introduction to Modern Algebra"
+  "intro_algebra": "Introduction to Modern Algebra",
+  "lin_indep_bases": "Linear Independence and Bases",
+  "rank_nullity": "Rank-Nullity Theorem"
 }

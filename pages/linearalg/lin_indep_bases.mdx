@@ -1,0 +1,199 @@
+# Linear Independence and Bases
+
+Okay. So, we've introduced the idea of a vector space and the notion of linear functions between vector spaces. However, these are still very much abstract objects. In order to make these ideas useful, we need to convert an abstract vector $v$ into something we can actually manipulate on a computer. We need *coordinates*.
+
+## Coordinates
+
+The idea behind coordinates is that we try to write vectors in $V$ as a linear combination of vectors that we choose ahead of time. By doing this, we can perform numerical manipulations on the coefficients in the linear combination instead of the abstract objects themselves. For example, if
+$$
+\bm{v} = \alpha_1 \bm{v_1} + \alpha_2 \bm{v_2} + \alpha_3 \bm{v_3} \,, \bm{w} = \beta_1 \bm{v_1} + \beta_2 \bm{v_2} + \beta_3 \bm{v_3} \,,
+$$
+then it is very easy to add these objects together,
+$$
+\bm{v} + \bm{w} = (\alpha_1 + \beta_1) \bm{v_1} + (\alpha_2 + \beta_2) \bm{v_2} + (\alpha_3 + \beta_3) \bm{v_3} \,.
+$$
+Therefore, on a computer, we can represent $\bm{v}$ and $\bm{w}$ by using arrays of the coefficients $\alpha_i$ and $\beta_i$ (a.k.a. the coordinates with respect to $\bm{v}_1, \bm{v}_2, \bm{v}_3$). In array notation, I like to write the set $\bm{v}_1, ..., \bm{v}_3$ as a row vector,
+$$
+\mathcal{B} = \left[\begin{array}{ccc} \bm{v}_1 & \bm{v}_2 & \bm{v}_3 \end{array}\right] \,.
+$$
+Then we can write $\bm{v}$ and $\bm{w}$ as
+$$
+\bm{v} = \mathcal{B}\left[\begin{array}{c} \alpha_1 \\ \alpha_2 \\ \alpha_3 \end{array}\right] \,, \qquad \bm{w} = \mathcal{B}\left[\begin{array}{c} \beta_1 \\ \beta_2 \\ \beta_3 \end{array}\right] \,.
+$$
+However, note that the $\mathcal{B}$ part of this equation exists only in our heads. It cannot really be put into a computer as long as the vectors $\bm{v}_1, ..., \bm{v}_3$ remain abstract objects. But in the context of the vector space $V$, the coordinates have no meaning unless it is with respect to a set of vectors $\mathcal{B}$. It is important to remember this, it can have dire ramifications. Namely, if we swap out $\mathcal{B}$, then the coordinates change. In many cases, the set $\mathcal{B}$ is implied, so it is common for people in practice to drop the $\mathcal{B}$ and work exclusively on the coordinates, but in order to avoid confusion it is good to remind oneself occasionally what the coordinates are actually in reference to.
+
+However, we've glanced over an even more glaring issue. So far, we have no guarantee that the coordinates are actually unique or actually exist for any vector! Indeed, we can't just choose any set $\mathcal{B}$ to represent vectors. In particular, if we think about the operation of taking an array of coordinates and mapping it to a vector by applying the set $\mathcal{B}$ on the left hand side,
+$$
+\mathcal{B} (\cdot) : \mathbb{R}^3 \rightarrow V \,,
+$$
+we want to be able to know two things about this coordinate map:
+
+1. *(Injectivity)* For any two distinct set of coordinates $\bm{a}_1, \bm{a}_2 \in \mathbb{R}^3$, are $\mathcal{B}\bm{a}_1, \mathcal{B}\bm{a}_2 \in V$ actually distinct vectors?
+2. *(Surjectivity)* For any $\bm{v} \in V$, is there actually a set of coordinates in $\mathbb{R}^3$ that yields this vector?
+
+Clearly both of these properties would be very desirable to have for $\mathcal{B}$ to be a basis (foreshadowing) for our computations. Let's begin with the first one, injectivity. The answer to this question has to do with something called *linear independence*.
+
+## Linear Independence
+
+In linear algebra, perhaps the most fundamental relationship between vectors is that of **linear independence**. Linear independence characterizes lack of redundancy in a set of vectors. For example, suppose that
+$$
+\bm{v_1} = \left[\begin{array}{c} 1 \\ 0 \end{array}\right]\,, \qquad \bm{v_2} = \left[\begin{array}{c} 0 \\ 1 \end{array}\right]\,, \qquad \bm{v_3} = \left[\begin{array}{c} 1 \\ 1 \end{array}\right]\,.
+$$
+From the perspective of the user, note that only two out of the three of these vectors are actually useful. To be more precise, any vector that can be written as a combination of $\bm{v_1}, \bm{v_2}, \bm{v_3}$ can also be written as a linear combination of $\bm{v_1}, \bm{v_2}$, since
+$$
+\bm{v_3} = \bm{v_1} + \bm{v_2} \,.
+$$
+However, note that such a combination could just have easily been written as a combination of $\bm{v_2}, \bm{v_3}$ or $\bm{v_1}, \bm{v_3}$, since
+$$
+\bm{v_1} = \bm{v_3} - \bm{v_2} \,, \qquad \bm{v_2} = \bm{v_3} - \bm{v_1} \,.
+$$
+Moreover, in the context of our previous discussion about coordinates, this relationship between the vectors means that we do not have unique coordinates. For example,
+$$
+\mathcal{B} \left[\begin{array}{c} 1 \\ 1 \\ 0 \end{array}\right] = \bm{v}_1 + \bm{v}_2 = \bm{v}_3 = \mathcal{B} \left[\begin{array}{c} 0 \\ 0 \\ 1 \end{array}\right] \,.
+$$
+See? The coordinates are not unique. Bummer. It would be very annoying to perform calculations with respect to $\mathcal{B}$. On the other hand, $\mathcal{C} = \left[ \begin{array}{cc} \bm{v}_1 & \bm{v}_2 \end{array} \right]$ doesn't have this annoying feature. So what is the difference between the sets $\mathcal{B}$ and $\mathcal{C}$? Well, it has to do with the fact that there was a non trivial way of writing zero as a non-trivial linear combination the members of the set,
+$$
+\bm{v}_1 + \bm{v}_2 - \bm{v}_3 = \bm{0} \,.
+$$
+Whereas there is no way of writing
+$$
+\alpha_1 \bm{v}_1 + \alpha_2 \bm{v}_2 = \bm{0} \,,
+$$
+for any $\alpha_1, \alpha_2$ except the trivial $\alpha_1 = \alpha_2 = 0$. The relationship $\bm{v}_1 + \bm{v}_2 - \bm{v}_3 = \bm{0}$ is called a linear dependence relationship and if such a relationship exists we say $\mathcal{B}$ is **linearly dependent** whereas if no such relationship exists then we say the set is **linearly independent**. This leads to the following definition,
+
+---
+
+**Definition:** A set of vectors $\mathcal{B} = \left[ \bm{v}_1, ..., \bm{v}_n \right]$ is **linearly independent** if
+$$
+\sum_i \alpha_i \bm{v}_i = \bm{0} 
+$$
+implies $\alpha_i = 0$. In other words, there exists no way of achieving $\bm{0}$ as a non-trivial linear combination of $\bm{v}_i$. 
+
+---
+
+Note that linear independence automatically implies that the coordinate map $\mathcal{B} (\cdot) : F^n \rightarrow V$ is injective, since if $\bm{a}, \bm{b} \in F^n$ are two sets of coordinates that yield the same vector under $\mathcal{B} \cdot$, then
+$$
+\bm{0} = \mathcal{B} \bm{a} - \mathcal{B} \bm{b} = \sum_i a_i \bm{v}_i - \sum_i b_i \bm{v}_i = \sum_i (a_i - b_i) \bm{v}_i \,.
+$$
+Linear independence therefore implies that $a_i = b_i$ and hence $\bm{a} = \bm{b}$. Here $F$ denotes the field of the vector space $V$. 
+
+## Surjectivity
+
+Now, the surjectivity of the coordinate map (i.e., can I write every vector in $V$ as a linear combination of vectors in $\mathcal{B}$) has to do with a property called **dimension**. In order to proceed, we will need two more definitions:
+
+---
+
+**Definition:** The **dimension** of a linearly independent set $\mathcal{B} = \left[ \bm{v}_1, ..., \bm{v}_n \right]$ is the number of vectors in that set, i.e., $\text{dim}(\mathcal{B}) = n$. 
+
+**Definition:** The **span** of a set $\mathcal{B} = \left[ \bm{v}_1, ..., \bm{v}_n \right]$ is the range of the coordinate map $\mathcal{B} (\cdot) : F^n \rightarrow V$, i.e., the set of all vectors of the form 
+$$
+\text{span}(\mathcal{B}) = \left\{ \sum_i \alpha_i \bm{v}_i \mid \alpha_i \in F \right\} \,.
+$$
+Note that $\text{span}(\mathcal{B})$ is also a vector space. 
+
+---
+
+Tautologically, the coordinate map of $\mathcal{B}$ is surjective if $\text{span}(\mathcal{B}) = V$. If this is the case then we call $\mathcal{B}$ a **basis** for $V$. Moreover, we define the dimension of $V$ to be the dimension of $\mathcal{B}$. This raises an interesting question: is the dimension of $V$ unique? Can we have two bases $\mathcal{B}_1$ and $\mathcal{B}_2$ for $V$ of different sizes? Turns out the answer is no. I won't prove it here, but if you had two bases of different sizes $n$ and $m$, you could build a invertible linear function from $F^n$ to $F^m$ using the corresponding coordinate maps. This intuitively seems incorrect, but I will leave it as an exercise to show that it cannot exist.
+
+Regardless, once you have a basis $\mathcal{B}$ for a vector space $V$ you are in business. You can now start doing a bunch of stuff on a computer. From the perspective of calculations, there is no difference between operations on $V$ and the corresponding operations on the coordinates in $F^n$. Hence, every finite dimensional vector space $V$ is isomorphic to $F^{\text{dim}(V)}$. This is really a godsend, and it enables calculations that aren't easily possible in other algebraic objects like abstract rings or groups.
+
+## Linear Functions as Matrices
+
+Now that we can represent abstract vectors $\bm{v} \in V$ as arrays using coordinates, one might ask if we can do the same for linear functions $f: V \rightarrow W$. In order to do this, we need a basis both for the domain $V$ and the codomain $W$. Suppose we have such bases $\mathcal{B}_V = \left[ \bm{v}_1, ..., \bm{v}_n \right]$ and $\mathcal{B}_W = \left[\bm{w}_1 ,..., \bm{w}_m \right]$. Note that by examining what $f$ does to the basis elements of $\mathcal{B}_V$, we can easily determine what it will do to an arbitrary vector in $V$, since
+$$
+f(\bm{v}) = f\left( \sum_i \alpha_i \bm{v}_i\right) = \sum_i \alpha_i f(\bm{v}_i) \,.
+$$
+Thus, the images $f(\bm{v}_i)$ fully determine the behavior of $f$. Now let us write down these images $f(\bm{v}_i)$ as a linear combinations of the elements in $\mathcal{B}_W$,
+$$
+f(\bm{v}_i) = \sum_j \bm{w}_j M_{ji} \,,
+$$
+where here $M_{ji}$ is the $j$-th coordinate of $f(v_i)$ with respect to $\mathcal{B}_W$. Note I reversed the order of the vectors $\bm{w}_j$ and the scalars $M_{ji}$ from how they are usually written. You will see why shortly. Now, for an arbitrary vector $\bm{v}$, this expression simply becomes
+$$
+f\left( \sum_i \alpha_i \bm{v}_i \right) = \sum_i \sum_j \bm{w}_j M_{ji} \alpha_i \,. 
+$$
+Written in array form, where $\bm{a}$ is the array of coordinates $\alpha_i$ and $\bm{M}$ is the matrix of entries $M_{ij}$, this is equivalent to
+$$
+f(\mathcal{B}_V \bm{a}) = \mathcal{B}_W \bm{M} \bm{a} \,. 
+$$
+We see here that we've written down an expression that converts the abstract object $f$ into a 2-d array of numbers $\bm{M}$. This is how one performs computations with linear functions on a computer. We specify bases for the domain and the codomain, then we write down the matrix coefficients of $f$, and finally we can compute the coordinates of $f(\bm{v})$ from the coordinates of $\bm{v}$ by simply applying the matrix $\bm{M}$. Note well that $\bm{M}$ depends on both the choice of $\mathcal{B}_V$ as well as the choice of $\mathcal{B}_W$. Changing these choices will change the matrix representation. 
+
+We will use the following notation to denote the matrix representation of $f$,
+$$
+[f]_{\mathcal{B}_W, \mathcal{B}_V} = \bm{M} \,.
+$$
+
+A special case of the above is when $V = W$. In this case, one usually uses the same basis for both the domain and the co-domain, in which case, the above reads
+$$
+f(\mathcal{B}_V \bm{a}) = \mathcal{B}_V \bm{M} \bm{a} \,. 
+$$
+In this case we can write
+$$
+[f]_{\mathcal{B}_V} = \bm{M} \,.
+$$
+
+## Change of Basis
+
+We noted before that the matrix representation $\bm{M}$ of a linear function $f$ depends on the choice of basis for the domain and the codomain. In this section we answer the question of how the representation actually actually changes when we want to swap out the basis. Why would we want to do such as thing? Well, some bases are more amenable for computation than others. A linear function might be sparse (i.e., mostly zeroes) on one basis but completely dense (i.e., mostly nonzeros) in another. Sparse matrices are generally far more computationally efficient and require far less memory to store, so there are good reasons why we might prefer some bases over others. The process of updating $\bm{M}$ when we change the basis of the domain or codomain is called **change of basis**. We will derive the formulas below.
+
+Suppose that $\mathcal{A} = \left[\bm{a}_1, ..., \bm{a}_n\right]$ and $\mathcal{B} = \left[\bm{b}_1, ..., \bm{b}_n \right]$ are bases for a vector space $V$. It is therefore possible to write the basis $\mathcal{A}$ in coordinate form with respect to the basis $\mathcal{B}$,
+$$
+\bm{a}_i = \sum_j \bm{b}_j M_{ji} \,.
+$$
+In matrix form, we write this as
+$$
+\mathcal{A} = \mathcal{B} \bm{M}_{\mathcal{B} \rightarrow \mathcal{A}} \,.
+$$
+Conversely, we can also write
+$$
+\mathcal{B} = \mathcal{A} \bm{M}_{\mathcal{A} \rightarrow \mathcal{B}} \,.
+$$
+Plugging one into the other, we get
+$$
+\mathcal{A} = \mathcal{A} \bm{M}_{\mathcal{A} \rightarrow \mathcal{B}} \bm{M}_{\mathcal{B} \rightarrow \mathcal{A}} \,. 
+$$
+Linear independence tells us that we can remove the $\mathcal{A}$ from both sides (the coordinates must be equal if the vectors are equal). This leaves us with
+$$
+\bm{I} = \bm{M}_{\mathcal{A} \rightarrow \mathcal{B}} \bm{M}_{\mathcal{B} \rightarrow \mathcal{A}}  \,,
+$$
+where $\bm{I}$ is the identity matrix. Likewise, we have $\bm{M}_{\mathcal{B} \rightarrow \mathcal{A}} \bm{M}_{\mathcal{A} \rightarrow \mathcal{B}} = \bm{I}$ from the other direction. This gives us
+$$
+\bm{M}_{\mathcal{A} \rightarrow \mathcal{B}} = \bm{M}_{\mathcal{B} \rightarrow \mathcal{A}}^{-1} \,.
+$$
+The matrices $\bm{M}_{\mathcal{A} \rightarrow \mathcal{B}}$ and $\bm{M}_{\mathcal{B} \rightarrow \mathcal{A}}^{-1}$ are known as change of basis matrices, and we see that the change of basis matrix from $\mathcal{A}$ to $\mathcal{B}$ is the inverse of the change of basis matrix from $\mathcal{B}$ to $\mathcal{A}$. This makes perfect sense. It also means that if you have a matrix of coordinates of a basis with respect to another basis, you can get the coordinates of the other direction by performing a matrix inverse on your computer.
+
+Now suppose we have a linear function $f : V \rightarrow W$ and corresponding bases $\mathcal{B}_V$ and $\mathcal{B}_W$ and we want to change basis in the domain to $\mathcal{B}_V'$ and in the codomain to $\mathcal{B}_W'$. How can we write $[f]_{\mathcal{B}_W', \mathcal{B}_V'}$ in terms of $[f]_{\mathcal{B}_W, \mathcal{B}_V}$? Well, we start with
+$$
+f(\mathcal{B}_V \bm{a}) = \mathcal{B}_W [f]_{\mathcal{B}_W, \mathcal{B}_V} \bm{a} \,.
+$$
+Now, replacing $\bm{a} = \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} \bm{b}$, we get
+$$
+f(\mathcal{B}_V \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} \bm{b}) = \mathcal{B}_W [f]_{\mathcal{B}_W, \mathcal{B}_V} \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} \bm{b} \,.
+$$
+The quantity of the left can be rewritten,
+$$
+f(\mathcal{B}_V' \bm{b}) = \mathcal{B}_W [f]_{\mathcal{B}_W, \mathcal{B}_V} \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} \bm{b} \,.
+$$
+Now we substitute $\mathcal{B}_W = \mathcal{B}_W' \bm{M}_{\mathcal{B}_W' \rightarrow \mathcal{B}_W}$ and we get
+$$
+f(\mathcal{B}_V' \bm{b}) = \mathcal{B}_W' (\bm{M}_{\mathcal{B}_W' \rightarrow \mathcal{B}_W} [f]_{\mathcal{B}_W, \mathcal{B}_V} \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'}) \bm{b} \,.
+$$
+The quantity in the parenthesis is exactly what we are after!
+$$
+[f]_{\mathcal{B}_W', \mathcal{B}_V'} = \bm{M}_{\mathcal{B}_W' \rightarrow \mathcal{B}_W} [f]_{\mathcal{B}_W, \mathcal{B}_V} \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} \,. 
+$$
+For a linear function $f : V \rightarrow V$ with the same domain and codomain, we get
+$$
+[f]_{\mathcal{B}_V'} = \bm{M}_{\mathcal{B}_V' \rightarrow \mathcal{B}_V} [f]_{\mathcal{B}_V} \bm{M}_{\mathcal{B}_V \rightarrow \mathcal{B}_V'} = \bm{M}_{\mathcal{B}_V' \rightarrow \mathcal{B}_V} [f]_{\mathcal{B}_V} \bm{M}_{\mathcal{B}_V' \rightarrow \mathcal{B}_V}^{-1} \,. 
+$$
+
+We see that when we are thinking in terms of automorphisms (linear functions with the same domain and codomain), the matrix representation of $f$ gets sandwiched between a matrix and its inverse. This operation of sandwiching a matrix $\bm{A}$ and turning it into $\bm{M} \bm{A} \bm{M}^{-1}$ is called **conjugation**. Moreover, if two matrices are related by conjugation, we say that they are **similar** (denoted $\bm{A} \sim \bm{B}$). In effect, if you ever see two matrices $\bm{A}, \bm{B}$ such that
+$$
+\bm{B} = \bm{M} \bm{A} \bm{M}^{-1} \,,
+$$
+then one way of interpreting this formula is that $\bm{B}$ and $\bm{A}$ represent the same linear function up to a change of basis. An interesting question follows naturally --- it is possible to categorize all matrices into classes based on conjugation? The answer is yes, and if you're interested, see [Jordan Normal Form](https://en.wikipedia.org/wiki/Jordan_normal_form). Unfortunately, this is out of scope for the moment, but still fun to mention.
+
+A much weaker equivalence relationship between matrices is called **matrix equivalence**. Note from our change of basis expression with different domain and codomain that the matrix for $f$ essentially gets sandwiched between two invertible matrices (not necessary the same). However, unlike the automorphism case where we take the same basis for the domain and codomain, if we take different bases, then we can similarly say that $\bm{A}$ and $\bm{B}$ represent the same linear function $f$ up to choice of basis in the domain and codomain if we can write
+$$
+\bm{B} = \bm{M} \bm{A} \bm{P}^{-1} \,. 
+$$
+where both $\bm{M}$ and $\bm{P}$ are invertible. The matrices $\bm{A}$ and $\bm{B}$ are then said to be *equivalent*. The same question can now be asked: can we categorize all matrices of a certain size by this equivalence relation? The answer is also yes, and unlike Jordan Normal Form, the answer is also much easier to prove. It turns out that there is a special number, called the rank of a linear function, such that all matrices of a certain rank are equivalent. We will see this in the next chapter.
